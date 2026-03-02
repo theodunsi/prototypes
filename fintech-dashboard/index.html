@@ -1,0 +1,555 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Fintech Dashboard</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/gsap.min.js"></script>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <style>
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+    body {
+      font-family: 'Inter', sans-serif;
+      font-weight: 500;
+      letter-spacing: -0.02em;
+      background: #E8ECF1;
+      min-height: 100vh;
+      overflow-x: hidden;
+    }
+
+    /* Balance card dashed border */
+    .balance-card {
+      border-radius: 20px;
+      width: 600px;
+      height: 177px;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      text-align: center;
+      position: relative;
+    }
+
+    /* SVG-based dashed border for precise 4px dash control */
+    .balance-card-border {
+      position: absolute;
+      inset: 0;
+      width: 100%;
+      height: 100%;
+      pointer-events: none;
+    }
+
+    .balance-label {
+      font-size: 12px;
+      color: #8A919B;
+      text-transform: uppercase;
+    }
+
+    .balance-amount {
+      font-size: 48px;
+      color: #1F1F1F;
+      font-variant-numeric: tabular-nums;
+      letter-spacing: -0.04em;
+      margin-top: 12px;
+    }
+
+    /* Transaction row */
+    .txn-row {
+      display: flex;
+      align-items: center;
+      gap: 16px;
+    }
+
+    .txn-icon-box {
+      width: 52px;
+      height: 52px;
+      border-radius: 12px;
+      background: #D7E7F7;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      flex-shrink: 0;
+    }
+
+    .txn-info {
+      flex: 1;
+      min-width: 0;
+    }
+
+    .txn-type {
+      font-size: 18px;
+      color: #1F1F1F;
+    }
+
+    .txn-brand {
+      display: flex;
+      align-items: center;
+      gap: 4px;
+      font-size: 18px;
+      color: #8A919B;
+      margin-top: 2px;
+    }
+
+    .txn-brand svg {
+      flex-shrink: 0;
+    }
+
+    .txn-amount {
+      font-size: 24px;
+      color: #1F1F1F;
+      white-space: nowrap;
+    }
+
+    /* Sidebar strip */
+    .sidebar-strip {
+      position: fixed;
+      left: 40px;
+      bottom: 36px;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 12px;
+      z-index: 50;
+    }
+
+    .fab-btn {
+      width: 48px;
+      height: 48px;
+      border-radius: 50%;
+      background: #C4C9D0;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      cursor: pointer;
+      border: none;
+      transition: none; /* GSAP handles transitions */
+    }
+
+    .fab-btn svg path {
+      transition: none; /* GSAP handles this */
+    }
+
+    .avatar-circle {
+      width: 48px;
+      height: 48px;
+      border-radius: 50%;
+      overflow: hidden;
+    }
+
+    .avatar-circle img {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+    }
+
+    .search-btn {
+      background: none;
+      border: none;
+      cursor: pointer;
+      padding: 4px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+
+    /* Blur overlay — blur animated via GSAP for smooth ramp */
+    .blur-overlay {
+      position: fixed;
+      inset: 0;
+      backdrop-filter: blur(0px);
+      -webkit-backdrop-filter: blur(0px);
+      background: rgba(180, 180, 180, 0);
+      z-index: 40;
+      pointer-events: none;
+    }
+
+    .blur-overlay.active {
+      pointer-events: auto;
+    }
+
+    /* Action cards container */
+    .action-cards {
+      position: fixed;
+      left: 116px;
+      bottom: 36px;
+      display: flex;
+      gap: 8px;
+      z-index: 45;
+      pointer-events: none;
+    }
+
+    .action-cards.active {
+      pointer-events: auto;
+    }
+
+    .action-card {
+      width: 140px;
+      height: 156px;
+      background: rgba(31, 31, 31, 0.12);
+      border-radius: 16px;
+      padding: 20px;
+      display: flex;
+      flex-direction: column;
+      justify-content: space-between;
+      cursor: pointer;
+      opacity: 0;
+      transform: translateY(30px);
+      transition: background-color 200ms ease;
+    }
+
+    .action-card:hover {
+      background: rgba(240, 244, 248, 0.7);
+    }
+
+    .action-card-label {
+      font-size: 22px;
+      color: #1F1F1F;
+      line-height: 1.1;
+    }
+
+    /* Reduced motion */
+    @media (prefers-reduced-motion: reduce) {
+      .action-card {
+        transition: none;
+      }
+    }
+  </style>
+</head>
+<body>
+
+  <!-- Logo — top-left -->
+  <div style="position: absolute; top: 36px; left: 40px;">
+    <svg width="24" height="26" viewBox="0 0 24 26" fill="none" xmlns="http://www.w3.org/2000/svg">
+      <path opacity="0.8" d="M17.7247 2.52417C19.3394 5.66824 20.25 9.22851 20.25 13C20.25 16.7715 19.3394 20.3318 17.7246 23.4759C21.4628 21.4572 24 17.5228 24 13C24 8.47721 21.4628 4.54289 17.7247 2.52417Z" fill="#1F1F1F"/>
+      <path d="M12.3286 2.27424C11.7858 1.51068 10.8612 1.09946 9.93387 1.25927C4.29102 2.23173 0 7.11821 0 13C0 18.8817 4.29099 23.7682 9.93383 24.7406C10.8611 24.9005 11.7858 24.4892 12.3285 23.7257C14.4839 20.6936 15.75 16.9936 15.75 12.9999C15.75 9.0063 14.4839 5.30632 12.3286 2.27424Z" fill="#1F1F1F"/>
+    </svg>
+  </div>
+
+  <!-- Main content — centered -->
+  <main style="max-width: 600px; margin: 0 auto; padding-top: 92px; padding-bottom: 120px;">
+
+    <!-- Greeting -->
+    <h1 style="font-size: 24px; color: #1F1F1F; margin-bottom: 24px; text-align: center;">
+      🌞 Good Morning, Ajayi
+    </h1>
+
+    <!-- Balance card -->
+    <div class="balance-card">
+      <svg class="balance-card-border" viewBox="0 0 600 177" xmlns="http://www.w3.org/2000/svg"><rect x="0.75" y="0.75" width="598.5" height="175.5" rx="20" ry="20" fill="none" stroke="#D9D9D9" stroke-width="1.5" stroke-dasharray="4 4"/></svg>
+      <p class="balance-label">Current Balance</p>
+      <p class="balance-amount">$1,978.65</p>
+    </div>
+
+    <!-- Recent transactions heading -->
+    <p style="text-align: center; font-size: 18px; font-weight: 400; color: #8A919B; margin-top: 40px; margin-bottom: 28px;">
+      Recent Transactions
+    </p>
+
+    <!-- Transaction rows -->
+    <div style="display: flex; flex-direction: column; gap: 20px;">
+
+      <!-- Txn 1: Withdrawal — PayPal -->
+      <div class="txn-row">
+        <div class="txn-icon-box">
+          <svg width="24" height="24" viewBox="0 0 24 24" fill="none"><path d="M7 17L17 7" stroke="#1F1F1F" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"/><path d="M7 7H17V17" stroke="#1F1F1F" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"/></svg>
+        </div>
+        <div class="txn-info">
+          <div class="txn-type">Withdrawal</div>
+          <div class="txn-brand">
+            <svg width="61" height="17" viewBox="0 0 61 17" fill="none" xmlns="http://www.w3.org/2000/svg"><g clip-path="url(#pp1)"><path d="M10.558 1.38067C9.80253 0.86132 8.81671 0.601013 7.60054 0.601013H2.89217C2.51934 0.601013 2.31336 0.787473 2.27423 1.16003L0.361595 13.1662C0.341716 13.2841 0.371219 13.3919 0.449833 13.49C0.527997 13.5882 0.626309 13.637 0.744049 13.637H2.98049C3.37275 13.637 3.58836 13.451 3.62793 13.078L4.15754 9.84119C4.17688 9.68432 4.24587 9.55678 4.36361 9.45855C4.48126 9.36051 4.62841 9.29638 4.80498 9.26706C4.98155 9.23791 5.14804 9.22316 5.30527 9.22316C5.46204 9.22316 5.64832 9.23315 5.86447 9.25266C6.08007 9.27218 6.21751 9.2818 6.27642 9.2818C7.96347 9.2818 9.28767 8.80644 10.2491 7.85462C11.2101 6.90333 11.6911 5.58417 11.6911 3.89658C11.6911 2.73914 11.3131 1.90057 10.558 1.3804V1.38067ZM8.13042 4.98575C8.03201 5.6725 7.77728 6.12349 7.36532 6.33937C6.95328 6.55551 6.36475 6.66309 5.59975 6.66309L4.62859 6.69241L5.12897 3.54363C5.16801 3.32803 5.29546 3.22009 5.51143 3.22009H6.07072C6.85505 3.22009 7.42433 3.33316 7.77746 3.55838C8.13041 3.78415 8.24816 4.26006 8.13042 4.98575Z" fill="#003087"/><path d="M60.2457 0.60083H58.0684C57.852 0.60083 57.7246 0.708768 57.6857 0.924731L55.7729 13.1665L55.7434 13.2254C55.7434 13.3239 55.7826 13.4167 55.8613 13.505C55.9393 13.5932 56.0379 13.6373 56.1555 13.6373H58.098C58.4701 13.6373 58.6761 13.4513 58.716 13.0783L60.6286 1.04247V1.01324C60.6285 0.73845 60.5006 0.601191 60.2457 0.601191V0.60083Z" fill="#009CDE"/><path d="M33.938 5.33926C33.938 5.2414 33.8986 5.14804 33.8206 5.05998C33.7419 4.97174 33.6536 4.92731 33.5557 4.92731H31.2899C31.0736 4.92731 30.8971 5.02589 30.76 5.22152L27.6408 9.81233L26.346 5.39827C26.2474 5.08463 26.0319 4.92731 25.6987 4.92731H23.4913C23.393 4.92731 23.3047 4.97156 23.2268 5.05998C23.148 5.14804 23.109 5.24158 23.109 5.33926C23.109 5.37875 23.3003 5.95729 23.6828 7.07551C24.0652 8.1941 24.4772 9.40065 24.9187 10.6955C25.3601 11.9901 25.5905 12.6771 25.6102 12.755C24.0014 14.9525 23.1973 16.1296 23.1973 16.2863C23.1973 16.5415 23.3246 16.6689 23.5799 16.6689H25.8457C26.0614 16.6689 26.2379 16.571 26.3755 16.3748L33.8795 5.54515C33.9185 5.5063 33.938 5.43794 33.938 5.33917V5.33926Z" fill="#003087"/><path d="M55.0378 4.92729H52.8012C52.5263 4.92729 52.3601 5.2511 52.3012 5.89863C51.7905 5.11411 50.8593 4.72131 49.5053 4.72131C48.0929 4.72131 46.8911 5.2511 45.9006 6.3105C44.9097 7.3699 44.4146 8.61602 44.4146 10.048C44.4146 11.2057 44.7529 12.1276 45.4296 12.814C46.1065 13.5011 47.0137 13.844 48.1519 13.844C48.7208 13.844 49.2995 13.7261 49.888 13.4909C50.4765 13.2555 50.9372 12.9418 51.2713 12.5492C51.2713 12.5689 51.2513 12.6569 51.2125 12.8138C51.1728 12.971 51.1535 13.0891 51.1535 13.1669C51.1535 13.4812 51.2807 13.6377 51.5361 13.6377H53.5668C53.9391 13.6377 54.1551 13.4517 54.2137 13.0787L55.4205 5.39808C55.4398 5.28024 55.4105 5.17258 55.3322 5.07435C55.2533 4.97649 55.1554 4.92729 55.0378 4.92729ZM51.1976 10.7247C50.6973 11.2152 50.0939 11.4603 49.3877 11.4603C48.8185 11.4603 48.3579 11.3036 48.0046 10.9895C47.6513 10.6764 47.4747 10.2447 47.4747 9.69476C47.4747 8.96942 47.72 8.3558 48.2107 7.85561C48.7004 7.35532 49.3092 7.10527 50.0351 7.10527C50.5839 7.10527 51.0401 7.26709 51.4034 7.59063C51.766 7.91443 51.9481 8.36075 51.9481 8.92985C51.9479 9.63602 51.6977 10.2345 51.1976 10.7247Z" fill="#009CDE"/><path d="M21.608 4.92729H19.3714C19.0964 4.92729 18.93 5.2511 18.8711 5.89863C18.3414 5.11411 17.4094 4.72131 16.0754 4.72131C14.6629 4.72131 13.4611 5.2511 12.4705 6.3105C11.4797 7.3699 10.9845 8.61602 10.9845 10.048C10.9845 11.2057 11.323 12.1276 11.9998 12.814C12.6767 13.5011 13.5838 13.844 14.7218 13.844C15.2708 13.844 15.8401 13.7261 16.4285 13.4909C17.0171 13.2555 17.4879 12.9418 17.8411 12.5492C17.7624 12.7844 17.7233 12.9905 17.7233 13.1669C17.7233 13.4812 17.8508 13.6377 18.1059 13.6377H20.1363C20.5088 13.6377 20.7249 13.4517 20.7838 13.0787L21.9902 5.39808C22.0096 5.28024 21.9803 5.17258 21.902 5.07435C21.8235 4.97649 21.7255 4.92729 21.608 4.92729ZM17.7677 10.7393C17.2673 11.2205 16.654 11.4603 15.9285 11.4603C15.3593 11.4603 14.9031 11.3036 14.5601 10.9895C14.2166 10.6764 14.045 10.2447 14.045 9.69476C14.045 8.96942 14.2901 8.3558 14.7808 7.85561C15.2709 7.35532 15.8791 7.10518 16.6053 7.10518C17.1543 7.10518 17.6105 7.26709 17.9737 7.59063C18.3364 7.91443 18.5181 8.36075 18.5181 8.92985C18.518 9.65572 18.268 10.2592 17.7677 10.7393Z" fill="#003087"/><path d="M43.9877 1.38067C43.2324 0.86132 42.2468 0.601013 41.0304 0.601013H36.3513C35.9589 0.601013 35.7429 0.787473 35.704 1.16003L33.7912 13.1662C33.7713 13.2841 33.8008 13.3919 33.8795 13.49C33.9573 13.5882 34.0559 13.637 34.1736 13.637H36.5865C36.8219 13.637 36.9788 13.5097 37.0575 13.2546L37.5872 9.84119C37.6067 9.68432 37.6753 9.55678 37.7933 9.45855C37.911 9.36051 38.058 9.29638 38.2347 9.26706C38.4111 9.23791 38.5776 9.22316 38.7349 9.22316C38.8918 9.22316 39.078 9.23315 39.2939 9.25266C39.5096 9.27218 39.6474 9.2818 39.7059 9.2818C41.3933 9.2818 42.7172 8.80644 43.6787 7.85462C44.64 6.90333 45.1206 5.58417 45.1206 3.89658C45.1207 2.73914 44.7428 1.90048 43.9877 1.3804V1.38067ZM40.9715 6.22154C40.5399 6.51575 39.8924 6.66282 39.0294 6.66282L38.0876 6.69232L38.5879 3.54345C38.6267 3.32794 38.7543 3.21982 38.9703 3.21982H39.4998C39.9315 3.21982 40.2747 3.23952 40.5302 3.27865C40.7847 3.31804 41.0304 3.44046 41.2658 3.64635C41.5013 3.85242 41.6189 4.15176 41.6189 4.54393C41.6189 5.36821 41.4028 5.92705 40.9715 6.22154Z" fill="#009CDE"/></g><defs><clipPath id="pp1"><rect width="60.9841" height="17" fill="white"/></clipPath></defs></svg>
+            <span>&middot; Paypal</span>
+          </div>
+        </div>
+        <div class="txn-amount">$24.5</div>
+      </div>
+
+      <!-- Txn 2: Deposit — Stripe -->
+      <div class="txn-row">
+        <div class="txn-icon-box">
+          <svg width="24" height="24" viewBox="0 0 24 24" fill="none"><path d="M17 7L7 17" stroke="#1F1F1F" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"/><path d="M17 17H7V7" stroke="#1F1F1F" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"/></svg>
+        </div>
+        <div class="txn-info">
+          <div class="txn-type">Deposit</div>
+          <div class="txn-brand">
+            <svg width="49" height="20" viewBox="0 0 49 20" fill="none" xmlns="http://www.w3.org/2000/svg"><path d="M48.0641 10.3338C48.0641 6.91589 46.4085 4.21896 43.2443 4.21896C40.0668 4.21896 38.1442 6.91589 38.1442 10.3071C38.1442 14.3258 40.4139 16.3551 43.6716 16.3551C45.2603 16.3551 46.4619 15.9947 47.3698 15.4873V12.8171C46.4619 13.271 45.4206 13.5514 44.0988 13.5514C42.8037 13.5514 41.6555 13.0975 41.5087 11.522H48.0374C48.0374 11.3485 48.0641 10.6542 48.0641 10.3338ZM41.4686 9.06542C41.4686 7.55674 42.3899 6.92924 43.231 6.92924C44.0454 6.92924 44.9132 7.55674 44.9132 9.06542H41.4686ZM32.9907 4.21896C31.6822 4.21896 30.8411 4.83311 30.3738 5.26035L30.2003 4.43258H27.263V20L30.6008 19.2924L30.6142 15.514C31.0948 15.8611 31.8024 16.3551 32.9773 16.3551C35.3672 16.3551 37.5434 14.4326 37.5434 10.2003C37.53 6.32844 35.3271 4.21896 32.9907 4.21896ZM32.1896 13.4179C31.4019 13.4179 30.9346 13.1375 30.6142 12.7904L30.6008 7.83712C30.9479 7.44993 31.4286 7.18291 32.1896 7.18291C33.4045 7.18291 34.2457 8.54473 34.2457 10.2937C34.2457 12.0828 33.4179 13.4179 32.1896 13.4179ZM22.6702 3.43124L26.0214 2.71028V0L22.6702 0.70761V3.43124ZM22.6702 4.44593H26.0214V16.1282H22.6702V4.44593ZM19.0788 5.43391L18.8652 4.44593H15.9813V16.1282H19.3191V8.21095C20.1068 7.18291 21.4419 7.36983 21.8558 7.51669V4.44593C21.4286 4.28571 19.8665 3.99199 19.0788 5.43391ZM12.4032 1.54873L9.14553 2.24299L9.13218 12.9373C9.13218 14.9132 10.6142 16.3685 12.5901 16.3685C13.6849 16.3685 14.486 16.1682 14.9266 15.9279V13.2176C14.4993 13.3912 12.3899 14.0053 12.3899 12.0294V7.28972H14.9266V4.44593H12.3899L12.4032 1.54873ZM3.37784 7.83712C3.37784 7.31642 3.80507 7.11615 4.51268 7.11615C5.52737 7.11615 6.80908 7.42323 7.82377 7.97063V4.83311C6.71562 4.39252 5.62083 4.21896 4.51268 4.21896C1.8024 4.21896 0 5.63418 0 7.99733C0 11.6822 5.07343 11.0948 5.07343 12.6836C5.07343 13.2977 4.53939 13.498 3.79172 13.498C2.68358 13.498 1.26836 13.0441 0.146862 12.4299V15.6075C1.38852 16.1415 2.64352 16.3685 3.79172 16.3685C6.56876 16.3685 8.47797 14.9933 8.47797 12.6035C8.46462 8.62483 3.37784 9.33244 3.37784 7.83712Z" fill="#635BFF"/></svg>
+            <span>&middot; Stripe</span>
+          </div>
+        </div>
+        <div class="txn-amount">$24.5</div>
+      </div>
+
+      <!-- Txn 3: Withdrawal — PayPal -->
+      <div class="txn-row">
+        <div class="txn-icon-box">
+          <svg width="24" height="24" viewBox="0 0 24 24" fill="none"><path d="M7 17L17 7" stroke="#1F1F1F" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"/><path d="M7 7H17V17" stroke="#1F1F1F" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"/></svg>
+        </div>
+        <div class="txn-info">
+          <div class="txn-type">Withdrawal</div>
+          <div class="txn-brand">
+            <svg width="61" height="17" viewBox="0 0 61 17" fill="none" xmlns="http://www.w3.org/2000/svg"><g clip-path="url(#pp2)"><path d="M10.558 1.38067C9.80253 0.86132 8.81671 0.601013 7.60054 0.601013H2.89217C2.51934 0.601013 2.31336 0.787473 2.27423 1.16003L0.361595 13.1662C0.341716 13.2841 0.371219 13.3919 0.449833 13.49C0.527997 13.5882 0.626309 13.637 0.744049 13.637H2.98049C3.37275 13.637 3.58836 13.451 3.62793 13.078L4.15754 9.84119C4.17688 9.68432 4.24587 9.55678 4.36361 9.45855C4.48126 9.36051 4.62841 9.29638 4.80498 9.26706C4.98155 9.23791 5.14804 9.22316 5.30527 9.22316C5.46204 9.22316 5.64832 9.23315 5.86447 9.25266C6.08007 9.27218 6.21751 9.2818 6.27642 9.2818C7.96347 9.2818 9.28767 8.80644 10.2491 7.85462C11.2101 6.90333 11.6911 5.58417 11.6911 3.89658C11.6911 2.73914 11.3131 1.90057 10.558 1.3804V1.38067ZM8.13042 4.98575C8.03201 5.6725 7.77728 6.12349 7.36532 6.33937C6.95328 6.55551 6.36475 6.66309 5.59975 6.66309L4.62859 6.69241L5.12897 3.54363C5.16801 3.32803 5.29546 3.22009 5.51143 3.22009H6.07072C6.85505 3.22009 7.42433 3.33316 7.77746 3.55838C8.13041 3.78415 8.24816 4.26006 8.13042 4.98575Z" fill="#003087"/><path d="M60.2457 0.60083H58.0684C57.852 0.60083 57.7246 0.708768 57.6857 0.924731L55.7729 13.1665L55.7434 13.2254C55.7434 13.3239 55.7826 13.4167 55.8613 13.505C55.9393 13.5932 56.0379 13.6373 56.1555 13.6373H58.098C58.4701 13.6373 58.6761 13.4513 58.716 13.0783L60.6286 1.04247V1.01324C60.6285 0.73845 60.5006 0.601191 60.2457 0.601191V0.60083Z" fill="#009CDE"/><path d="M33.938 5.33926C33.938 5.2414 33.8986 5.14804 33.8206 5.05998C33.7419 4.97174 33.6536 4.92731 33.5557 4.92731H31.2899C31.0736 4.92731 30.8971 5.02589 30.76 5.22152L27.6408 9.81233L26.346 5.39827C26.2474 5.08463 26.0319 4.92731 25.6987 4.92731H23.4913C23.393 4.92731 23.3047 4.97156 23.2268 5.05998C23.148 5.14804 23.109 5.24158 23.109 5.33926C23.109 5.37875 23.3003 5.95729 23.6828 7.07551C24.0652 8.1941 24.4772 9.40065 24.9187 10.6955C25.3601 11.9901 25.5905 12.6771 25.6102 12.755C24.0014 14.9525 23.1973 16.1296 23.1973 16.2863C23.1973 16.5415 23.3246 16.6689 23.5799 16.6689H25.8457C26.0614 16.6689 26.2379 16.571 26.3755 16.3748L33.8795 5.54515C33.9185 5.5063 33.938 5.43794 33.938 5.33917V5.33926Z" fill="#003087"/><path d="M55.0378 4.92729H52.8012C52.5263 4.92729 52.3601 5.2511 52.3012 5.89863C51.7905 5.11411 50.8593 4.72131 49.5053 4.72131C48.0929 4.72131 46.8911 5.2511 45.9006 6.3105C44.9097 7.3699 44.4146 8.61602 44.4146 10.048C44.4146 11.2057 44.7529 12.1276 45.4296 12.814C46.1065 13.5011 47.0137 13.844 48.1519 13.844C48.7208 13.844 49.2995 13.7261 49.888 13.4909C50.4765 13.2555 50.9372 12.9418 51.2713 12.5492C51.2713 12.5689 51.2513 12.6569 51.2125 12.8138C51.1728 12.971 51.1535 13.0891 51.1535 13.1669C51.1535 13.4812 51.2807 13.6377 51.5361 13.6377H53.5668C53.9391 13.6377 54.1551 13.4517 54.2137 13.0787L55.4205 5.39808C55.4398 5.28024 55.4105 5.17258 55.3322 5.07435C55.2533 4.97649 55.1554 4.92729 55.0378 4.92729ZM51.1976 10.7247C50.6973 11.2152 50.0939 11.4603 49.3877 11.4603C48.8185 11.4603 48.3579 11.3036 48.0046 10.9895C47.6513 10.6764 47.4747 10.2447 47.4747 9.69476C47.4747 8.96942 47.72 8.3558 48.2107 7.85561C48.7004 7.35532 49.3092 7.10527 50.0351 7.10527C50.5839 7.10527 51.0401 7.26709 51.4034 7.59063C51.766 7.91443 51.9481 8.36075 51.9481 8.92985C51.9479 9.63602 51.6977 10.2345 51.1976 10.7247Z" fill="#009CDE"/><path d="M21.608 4.92729H19.3714C19.0964 4.92729 18.93 5.2511 18.8711 5.89863C18.3414 5.11411 17.4094 4.72131 16.0754 4.72131C14.6629 4.72131 13.4611 5.2511 12.4705 6.3105C11.4797 7.3699 10.9845 8.61602 10.9845 10.048C10.9845 11.2057 11.323 12.1276 11.9998 12.814C12.6767 13.5011 13.5838 13.844 14.7218 13.844C15.2708 13.844 15.8401 13.7261 16.4285 13.4909C17.0171 13.2555 17.4879 12.9418 17.8411 12.5492C17.7624 12.7844 17.7233 12.9905 17.7233 13.1669C17.7233 13.4812 17.8508 13.6377 18.1059 13.6377H20.1363C20.5088 13.6377 20.7249 13.4517 20.7838 13.0787L21.9902 5.39808C22.0096 5.28024 21.9803 5.17258 21.902 5.07435C21.8235 4.97649 21.7255 4.92729 21.608 4.92729ZM17.7677 10.7393C17.2673 11.2205 16.654 11.4603 15.9285 11.4603C15.3593 11.4603 14.9031 11.3036 14.5601 10.9895C14.2166 10.6764 14.045 10.2447 14.045 9.69476C14.045 8.96942 14.2901 8.3558 14.7808 7.85561C15.2709 7.35532 15.8791 7.10518 16.6053 7.10518C17.1543 7.10518 17.6105 7.26709 17.9737 7.59063C18.3364 7.91443 18.5181 8.36075 18.5181 8.92985C18.518 9.65572 18.268 10.2592 17.7677 10.7393Z" fill="#003087"/><path d="M43.9877 1.38067C43.2324 0.86132 42.2468 0.601013 41.0304 0.601013H36.3513C35.9589 0.601013 35.7429 0.787473 35.704 1.16003L33.7912 13.1662C33.7713 13.2841 33.8008 13.3919 33.8795 13.49C33.9573 13.5882 34.0559 13.637 34.1736 13.637H36.5865C36.8219 13.637 36.9788 13.5097 37.0575 13.2546L37.5872 9.84119C37.6067 9.68432 37.6753 9.55678 37.7933 9.45855C37.911 9.36051 38.058 9.29638 38.2347 9.26706C38.4111 9.23791 38.5776 9.22316 38.7349 9.22316C38.8918 9.22316 39.078 9.23315 39.2939 9.25266C39.5096 9.27218 39.6474 9.2818 39.7059 9.2818C41.3933 9.2818 42.7172 8.80644 43.6787 7.85462C44.64 6.90333 45.1206 5.58417 45.1206 3.89658C45.1207 2.73914 44.7428 1.90048 43.9877 1.3804V1.38067ZM40.9715 6.22154C40.5399 6.51575 39.8924 6.66282 39.0294 6.66282L38.0876 6.69232L38.5879 3.54345C38.6267 3.32794 38.7543 3.21982 38.9703 3.21982H39.4998C39.9315 3.21982 40.2747 3.23952 40.5302 3.27865C40.7847 3.31804 41.0304 3.44046 41.2658 3.64635C41.5013 3.85242 41.6189 4.15176 41.6189 4.54393C41.6189 5.36821 41.4028 5.92705 40.9715 6.22154Z" fill="#009CDE"/></g><defs><clipPath id="pp2"><rect width="60.9841" height="17" fill="white"/></clipPath></defs></svg>
+            <span>&middot; Paypal</span>
+          </div>
+        </div>
+        <div class="txn-amount">$16.9</div>
+      </div>
+
+      <!-- Txn 4: Deposit — Stripe -->
+      <div class="txn-row">
+        <div class="txn-icon-box">
+          <svg width="24" height="24" viewBox="0 0 24 24" fill="none"><path d="M17 7L7 17" stroke="#1F1F1F" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"/><path d="M17 17H7V7" stroke="#1F1F1F" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"/></svg>
+        </div>
+        <div class="txn-info">
+          <div class="txn-type">Deposit</div>
+          <div class="txn-brand">
+            <svg width="49" height="20" viewBox="0 0 49 20" fill="none" xmlns="http://www.w3.org/2000/svg"><path d="M48.0641 10.3338C48.0641 6.91589 46.4085 4.21896 43.2443 4.21896C40.0668 4.21896 38.1442 6.91589 38.1442 10.3071C38.1442 14.3258 40.4139 16.3551 43.6716 16.3551C45.2603 16.3551 46.4619 15.9947 47.3698 15.4873V12.8171C46.4619 13.271 45.4206 13.5514 44.0988 13.5514C42.8037 13.5514 41.6555 13.0975 41.5087 11.522H48.0374C48.0374 11.3485 48.0641 10.6542 48.0641 10.3338ZM41.4686 9.06542C41.4686 7.55674 42.3899 6.92924 43.231 6.92924C44.0454 6.92924 44.9132 7.55674 44.9132 9.06542H41.4686ZM32.9907 4.21896C31.6822 4.21896 30.8411 4.83311 30.3738 5.26035L30.2003 4.43258H27.263V20L30.6008 19.2924L30.6142 15.514C31.0948 15.8611 31.8024 16.3551 32.9773 16.3551C35.3672 16.3551 37.5434 14.4326 37.5434 10.2003C37.53 6.32844 35.3271 4.21896 32.9907 4.21896ZM32.1896 13.4179C31.4019 13.4179 30.9346 13.1375 30.6142 12.7904L30.6008 7.83712C30.9479 7.44993 31.4286 7.18291 32.1896 7.18291C33.4045 7.18291 34.2457 8.54473 34.2457 10.2937C34.2457 12.0828 33.4179 13.4179 32.1896 13.4179ZM22.6702 3.43124L26.0214 2.71028V0L22.6702 0.70761V3.43124ZM22.6702 4.44593H26.0214V16.1282H22.6702V4.44593ZM19.0788 5.43391L18.8652 4.44593H15.9813V16.1282H19.3191V8.21095C20.1068 7.18291 21.4419 7.36983 21.8558 7.51669V4.44593C21.4286 4.28571 19.8665 3.99199 19.0788 5.43391ZM12.4032 1.54873L9.14553 2.24299L9.13218 12.9373C9.13218 14.9132 10.6142 16.3685 12.5901 16.3685C13.6849 16.3685 14.486 16.1682 14.9266 15.9279V13.2176C14.4993 13.3912 12.3899 14.0053 12.3899 12.0294V7.28972H14.9266V4.44593H12.3899L12.4032 1.54873ZM3.37784 7.83712C3.37784 7.31642 3.80507 7.11615 4.51268 7.11615C5.52737 7.11615 6.80908 7.42323 7.82377 7.97063V4.83311C6.71562 4.39252 5.62083 4.21896 4.51268 4.21896C1.8024 4.21896 0 5.63418 0 7.99733C0 11.6822 5.07343 11.0948 5.07343 12.6836C5.07343 13.2977 4.53939 13.498 3.79172 13.498C2.68358 13.498 1.26836 13.0441 0.146862 12.4299V15.6075C1.38852 16.1415 2.64352 16.3685 3.79172 16.3685C6.56876 16.3685 8.47797 14.9933 8.47797 12.6035C8.46462 8.62483 3.37784 9.33244 3.37784 7.83712Z" fill="#635BFF"/></svg>
+            <span>&middot; Stripe</span>
+          </div>
+        </div>
+        <div class="txn-amount">$24.5</div>
+      </div>
+
+    </div>
+  </main>
+
+  <!-- Sidebar strip — fixed bottom-left -->
+  <div class="sidebar-strip">
+    <!-- Search icon (no bg circle) -->
+    <button class="search-btn" aria-label="Search">
+      <svg width="16" height="16" viewBox="0 0 16 16" fill="none"><path fill-rule="evenodd" clip-rule="evenodd" d="M7.33337 1.33333C4.01967 1.33333 1.33337 4.01962 1.33337 7.33333C1.33337 10.6471 4.01967 13.3333 7.33337 13.3333C8.75004 13.3333 10.052 12.8423 11.0785 12.0213L13.5286 14.4714C13.789 14.7317 14.2111 14.7317 14.4714 14.4714C14.7318 14.2111 14.7318 13.7889 14.4714 13.5286L12.0213 11.0785C12.8424 10.052 13.3334 8.74999 13.3334 7.33333C13.3334 4.01962 10.6471 1.33333 7.33337 1.33333ZM2.66671 7.33333C2.66671 4.756 4.75605 2.66666 7.33337 2.66666C9.91071 2.66666 12 4.756 12 7.33333C12 9.91066 9.91071 12 7.33337 12C4.75605 12 2.66671 9.91066 2.66671 7.33333Z" fill="#1F1F1F"/></svg>
+    </button>
+
+    <!-- FAB button -->
+    <button class="fab-btn" id="fabBtn" aria-label="Quick actions">
+      <svg id="fabIcon" width="16" height="16" viewBox="0 0 16 16" fill="none"><path fill-rule="evenodd" clip-rule="evenodd" d="M8.00004 1.83331C8.46031 1.83331 8.83337 2.20641 8.83337 2.66665V7.16665L13.3334 7.16665C13.7936 7.16665 14.1667 7.53971 14.1667 7.99998C14.1667 8.46025 13.7936 8.83331 13.3334 8.83331H8.83337V13.3333C8.83337 13.7936 8.46031 14.1666 8.00004 14.1666C7.53977 14.1666 7.16671 13.7936 7.16671 13.3333L7.16671 8.83331H2.66671C2.20647 8.83331 1.83337 8.46025 1.83337 7.99998C1.83337 7.53971 2.20647 7.16665 2.66671 7.16665H7.16671V2.66665C7.16671 2.20641 7.53977 1.83331 8.00004 1.83331Z" fill="#1F1F1F"/></svg>
+    </button>
+
+    <!-- Avatar -->
+    <div class="avatar-circle">
+      <img src="../assets/profile-Img.svg" alt="Profile" />
+    </div>
+  </div>
+
+  <!-- Blur overlay -->
+  <div class="blur-overlay" id="blurOverlay"></div>
+
+  <!-- Action cards -->
+  <div class="action-cards" id="actionCards">
+    <!-- Card 1: Send Money -->
+    <div class="action-card">
+      <svg width="24" height="24" viewBox="0 0 24 24" fill="none"><path d="M7 17L17 7" stroke="#1F1F1F" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"/><path d="M7 7H17V17" stroke="#1F1F1F" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"/></svg>
+      <span class="action-card-label">Send<br>Money</span>
+    </div>
+
+    <!-- Card 2: Add Money -->
+    <div class="action-card">
+      <svg width="24" height="24" viewBox="0 0 16 16" fill="none"><path fill-rule="evenodd" clip-rule="evenodd" d="M8.00004 1.83331C8.46031 1.83331 8.83337 2.20641 8.83337 2.66665V7.16665L13.3334 7.16665C13.7936 7.16665 14.1667 7.53971 14.1667 7.99998C14.1667 8.46025 13.7936 8.83331 13.3334 8.83331H8.83337V13.3333C8.83337 13.7936 8.46031 14.1666 8.00004 14.1666C7.53977 14.1666 7.16671 13.7936 7.16671 13.3333L7.16671 8.83331H2.66671C2.20647 8.83331 1.83337 8.46025 1.83337 7.99998C1.83337 7.53971 2.20647 7.16665 2.66671 7.16665H7.16671V2.66665C7.16671 2.20641 7.53977 1.83331 8.00004 1.83331Z" fill="#1F1F1F"/></svg>
+      <span class="action-card-label">Add<br>Money</span>
+    </div>
+
+    <!-- Card 3: Invoices -->
+    <div class="action-card">
+      <svg width="24" height="24" viewBox="0 0 24 24" fill="none"><path fill-rule="evenodd" clip-rule="evenodd" d="M3.25 4C3.25 2.48122 4.48122 1.25 6 1.25H18C19.5188 1.25 20.75 2.48122 20.75 4V21.5C20.75 21.7599 20.6154 22.0013 20.3943 22.138C20.1732 22.2746 19.8971 22.2871 19.6646 22.1708L16.0408 20.3589L12.3975 22.636C12.1543 22.788 11.8457 22.788 11.6025 22.636L7.95919 20.3589L4.33541 22.1708C4.10292 22.2871 3.82681 22.2746 3.6057 22.138C3.38459 22.0013 3.25 21.7599 3.25 21.5V4ZM7.5 11C7.5 10.4477 7.94772 10 8.5 10H11.5C12.0523 10 12.5 10.4477 12.5 11C12.5 11.5523 12.0523 12 11.5 12H8.5C7.94772 12 7.5 11.5523 7.5 11ZM8.5 6C7.94772 6 7.5 6.44772 7.5 7C7.5 7.55228 7.94772 8 8.5 8H14.5C15.0523 8 15.5 7.55228 15.5 7C15.5 6.44772 15.0523 6 14.5 6H8.5Z" fill="#1F1F1F"/></svg>
+      <span class="action-card-label">Invoices</span>
+    </div>
+
+    <!-- Card 4: My Card -->
+    <div class="action-card">
+      <svg width="24" height="24" viewBox="0 0 24 24" fill="none"><path fill-rule="evenodd" clip-rule="evenodd" d="M13.5476 3.25C15.3866 3.24999 16.8308 3.24998 17.9694 3.3786C19.1316 3.50988 20.074 3.78362 20.8574 4.40228C21.0919 4.58749 21.3093 4.79205 21.507 5.0138C22.1732 5.76101 22.4707 6.66669 22.6124 7.77785C22.6287 7.9057 22.6368 7.96963 22.6222 8.02578C22.5987 8.11553 22.5299 8.19375 22.4438 8.22835C22.39 8.25 22.3226 8.25 22.1878 8.25H1.81224C1.67747 8.25 1.61007 8.25 1.55622 8.22835C1.47015 8.19375 1.40128 8.11553 1.37784 8.02578C1.36318 7.96963 1.37133 7.9057 1.38764 7.77785C1.52933 6.66669 1.82682 5.76101 2.49299 5.0138C2.69069 4.79205 2.90812 4.58749 3.14264 4.40228C3.92602 3.78362 4.86843 3.50988 6.03059 3.3786C7.16918 3.24998 8.61347 3.24999 10.4525 3.25H13.5476ZM22.75 12.0527C22.75 13.7768 22.75 15.1427 22.6124 16.2222C22.4707 17.3333 22.1732 18.239 21.507 18.9862C21.3093 19.2079 21.0919 19.4125 20.8574 19.5977C20.074 20.2164 19.1316 20.4901 17.9694 20.6214C16.8308 20.75 15.3866 20.75 13.5475 20.75H10.4525C8.61345 20.75 7.16917 20.75 6.03058 20.6214C4.86842 20.4901 3.926 20.2164 3.14263 19.5977C2.90811 19.4125 2.69068 19.2079 2.49298 18.9862C1.82681 18.239 1.52932 17.3333 1.38763 16.2222C1.24998 15.1427 1.24999 13.7767 1.25 12.0527V11.9473C1.25 11.3715 1.24999 10.8357 1.25512 10.3371C1.25795 10.0614 1.25937 9.92356 1.34704 9.83678C1.43472 9.75 1.57361 9.75 1.85139 9.75H22.1486C22.4264 9.75 22.5653 9.75 22.653 9.83678C22.7406 9.92356 22.7421 10.0614 22.7449 10.3371C22.75 10.8355 22.75 11.3712 22.75 11.9467V12.0527ZM10.25 16C10.25 15.5858 10.5858 15.25 11 15.25H12.5C12.9142 15.25 13.25 15.5858 13.25 16C13.25 16.4142 12.9142 16.75 12.5 16.75H11C10.5858 16.75 10.25 16.4142 10.25 16ZM15.5 15.25C15.0858 15.25 14.75 15.5858 14.75 16C14.75 16.4142 15.0858 16.75 15.5 16.75H19C19.4142 16.75 19.75 16.4142 19.75 16C19.75 15.5858 19.4142 15.25 19 15.25H15.5Z" fill="#1F1F1F"/></svg>
+      <span class="action-card-label">My Card</span>
+    </div>
+  </div>
+
+  <script>
+    // --- State ---
+    let isOpen = false;
+    const fabBtn = document.getElementById('fabBtn');
+    const fabIcon = document.getElementById('fabIcon');
+    const blurOverlay = document.getElementById('blurOverlay');
+    const actionCardsContainer = document.getElementById('actionCards');
+    const actionCards = document.querySelectorAll('.action-card');
+
+    // Check for reduced motion preference
+    const prefersReducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+
+    // Smooth blur helper — animates backdrop-filter blur radius via GSAP
+    const blurState = { blur: 0, bgAlpha: 0 };
+
+    function animateBlurIn() {
+      blurState.blur = 0;
+      blurState.bgAlpha = 0;
+      gsap.to(blurState, {
+        blur: 20,
+        bgAlpha: 0.15,
+        duration: 0.7,
+        ease: 'power2.out',
+        onUpdate: () => {
+          blurOverlay.style.backdropFilter = `blur(${blurState.blur}px)`;
+          blurOverlay.style.webkitBackdropFilter = `blur(${blurState.blur}px)`;
+          blurOverlay.style.background = `rgba(180, 180, 180, ${blurState.bgAlpha})`;
+        }
+      });
+    }
+
+    function animateBlurOut() {
+      gsap.to(blurState, {
+        blur: 0,
+        bgAlpha: 0,
+        duration: 0.4,
+        ease: 'power2.in',
+        onUpdate: () => {
+          blurOverlay.style.backdropFilter = `blur(${blurState.blur}px)`;
+          blurOverlay.style.webkitBackdropFilter = `blur(${blurState.blur}px)`;
+          blurOverlay.style.background = `rgba(180, 180, 180, ${blurState.bgAlpha})`;
+        },
+        onComplete: () => {
+          blurOverlay.classList.remove('active');
+          actionCardsContainer.classList.remove('active');
+        }
+      });
+    }
+
+    // --- Open FAB ---
+    function openFAB() {
+      if (isOpen) return;
+      isOpen = true;
+
+      // Kill any running card/overlay tweens to prevent conflicts
+      gsap.killTweensOf(actionCards);
+      gsap.killTweensOf(blurState);
+      gsap.killTweensOf(fabBtn);
+      gsap.killTweensOf(fabIcon);
+      gsap.killTweensOf(fabIcon.querySelector('path'));
+
+      blurOverlay.classList.add('active');
+      actionCardsContainer.classList.add('active');
+
+      if (prefersReducedMotion) {
+        fabBtn.style.background = '#1F1F1F';
+        fabIcon.querySelector('path').setAttribute('fill', '#FFFFFF');
+        fabIcon.style.transform = 'rotate(45deg)';
+        blurOverlay.style.backdropFilter = 'blur(20px)';
+        blurOverlay.style.webkitBackdropFilter = 'blur(20px)';
+        blurOverlay.style.background = 'rgba(180, 180, 180, 0.15)';
+        actionCards.forEach(card => {
+          card.style.opacity = '1';
+          card.style.transform = 'translateY(0)';
+        });
+        return;
+      }
+
+      // FAB: gray → black, icon rotates 45° and turns white
+      gsap.to(fabBtn, {
+        backgroundColor: '#1F1F1F',
+        duration: 0.6,
+        ease: 'power2.out'
+      });
+      gsap.to(fabIcon, {
+        rotation: 45,
+        duration: 0.55,
+        ease: 'sine.inOut'
+      });
+      gsap.to(fabIcon.querySelector('path'), {
+        attr: { fill: '#FFFFFF' },
+        duration: 0.55,
+        ease: 'sine.inOut'
+      });
+
+      // Blur overlay — smooth ramp
+      animateBlurIn();
+
+      // Cards stagger in from bottom
+      gsap.fromTo(actionCards,
+        { opacity: 0, y: 50 },
+        {
+          opacity: 1,
+          y: 0,
+          duration: 0.65,
+          stagger: 0.1,
+          ease: 'power3.out',
+          delay: 0.2
+        }
+      );
+    }
+
+    // --- Close FAB ---
+    function closeFAB() {
+      if (!isOpen) return;
+      isOpen = false;
+
+      // Kill any running tweens to prevent conflicts
+      gsap.killTweensOf(actionCards);
+      gsap.killTweensOf(blurState);
+      gsap.killTweensOf(fabBtn);
+      gsap.killTweensOf(fabIcon);
+      gsap.killTweensOf(fabIcon.querySelector('path'));
+
+      if (prefersReducedMotion) {
+        fabBtn.style.background = '#C4C9D0';
+        fabIcon.querySelector('path').setAttribute('fill', '#1F1F1F');
+        fabIcon.style.transform = 'rotate(0deg)';
+        blurOverlay.style.backdropFilter = 'blur(0px)';
+        blurOverlay.style.webkitBackdropFilter = 'blur(0px)';
+        blurOverlay.style.background = 'rgba(180, 180, 180, 0)';
+        blurOverlay.classList.remove('active');
+        actionCardsContainer.classList.remove('active');
+        actionCards.forEach(card => {
+          card.style.opacity = '0';
+          card.style.transform = 'translateY(50px)';
+        });
+        return;
+      }
+
+      // All cards slide down together
+      gsap.to(actionCards, {
+        opacity: 0,
+        y: 50,
+        duration: 0.3,
+        ease: 'power2.in'
+      });
+
+      // FAB: black → gray, icon rotates back
+      gsap.to(fabBtn, {
+        backgroundColor: '#C4C9D0',
+        duration: 0.4,
+        ease: 'power2.out',
+        delay: 0.1
+      });
+      gsap.to(fabIcon, {
+        rotation: 0,
+        duration: 0.55,
+        ease: 'sine.inOut'
+      });
+      gsap.to(fabIcon.querySelector('path'), {
+        attr: { fill: '#1F1F1F' },
+        duration: 0.55,
+        ease: 'sine.inOut'
+      });
+
+      // Blur overlay — smooth ramp out
+      animateBlurOut();
+    }
+
+    // --- Toggle ---
+    fabBtn.addEventListener('click', () => {
+      if (isOpen) {
+        closeFAB();
+      } else {
+        openFAB();
+      }
+    });
+
+    // Close on overlay click
+    blurOverlay.addEventListener('click', closeFAB);
+
+    // Close on Escape key
+    document.addEventListener('keydown', (e) => {
+      if (e.key === 'Escape' && isOpen) {
+        closeFAB();
+      }
+    });
+  </script>
+</body>
+</html>
