@@ -1,0 +1,498 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>The Planet</title>
+
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500&display=swap" rel="stylesheet" />
+
+  <!-- GSAP for animations -->
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/gsap.min.js"></script>
+  <!-- Lenis for smooth scroll (used by Linear, Vercel, etc.) -->
+  <script src="https://cdn.jsdelivr.net/npm/lenis@1.1.14/dist/lenis.min.js"></script>
+
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    /* scroll-behavior handled by Lenis */
+    html { scroll-behavior: auto; }
+
+    body {
+      background: #ffffff;
+      -webkit-font-smoothing: antialiased;
+      -moz-osx-font-smoothing: grayscale;
+      overflow-x: hidden; /* prevent horizontal scroll from large globe */
+    }
+
+    /* ── Bottom decorative globe ────────────────────── */
+    .bottom-globe-wrap {
+      margin-top: 200px;
+      height: 300px;        /* exactly half of 600px — clips the bottom half */
+      overflow: hidden;
+      display: flex;
+      justify-content: center;
+      align-items: flex-start;
+      pointer-events: none;
+    }
+
+    .bottom-globe {
+      width: 600px;
+      height: 600px;
+      flex-shrink: 0;
+      display: block;
+    }
+
+    /* ── Page layout ───────────────────────────────── */
+    .page {
+      max-width: 648px;
+      margin: 0 auto;
+      padding: 80px 24px 0;
+      text-align: left;
+    }
+
+    /* ── Globe ─────────────────────────────────────── */
+    .globe {
+      display: block;
+      width: 38px;
+      height: 38px;
+      margin-left: 0;
+      margin-bottom: 20px;
+    }
+
+    .page-title {
+      font-family: 'Inter', system-ui, sans-serif;
+      font-size: 24px;
+      font-weight: 500;
+      color: #1F1F1F;
+      line-height: 1.25;
+      letter-spacing: -0.02em;
+    }
+
+    /* ── Sections ──────────────────────────────────── */
+    .section { margin-bottom: 0; }
+
+    /* ── Section divider ────────────────────────────── */
+    .section-divider {
+      margin: 50px 0;
+    }
+
+    .divider-line {
+      width: 1.2px;
+      height: 24px;
+      background: #E0E0E0;
+    }
+
+    /* heading row — block so heading text is flush with page edge */
+    .heading-row {
+      display: block;
+      position: relative;
+      margin-bottom: 16px;
+      cursor: pointer;
+    }
+
+    .link-icon {
+      position: absolute;
+      left: -20px; /* 16px icon + 4px gap, overflows left */
+      top: calc(50% - 8px); /* vertically centered (icon is 16px tall) */
+      width: 16px;
+      height: 16px;
+      opacity: 0;
+      /* GSAP owns all transitions — no CSS transition here */
+    }
+
+    .section-heading {
+      font-family: 'Inter', system-ui, sans-serif;
+      font-size: 18px;
+      font-weight: 500;
+      color: #1F1F1F;
+      line-height: 1.4;
+      letter-spacing: -0.02em;
+    }
+
+    .section-body {
+      font-family: 'Inter', system-ui, sans-serif;
+      font-size: 16px;
+      font-weight: 400;
+      color: #737373;
+      line-height: 24px;
+      letter-spacing: 0;
+      max-width: 600px;
+      margin-left: 0;
+      margin-right: 0;
+    }
+
+    /* ── TOC ───────────────────────────────────────── */
+    #toc {
+      position: fixed;
+      right: 28px;
+      top: 77px; /* 80px page padding − 3px toc-item padding-top = first bar at 80px */
+      display: flex;
+      flex-direction: column;
+      align-items: flex-end;
+      gap: 10px;
+      z-index: 100;
+    }
+
+    .toc-item {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      cursor: pointer;
+      padding: 3px 0;
+      position: relative;
+    }
+
+    .toc-label {
+      position: absolute;
+      right: 100%;          /* label right edge touches toc-item left edge — no gap = no dead zone */
+      padding-right: 8px;   /* visual spacing between label text and bar */
+      top: 50%;
+      font-family: 'Inter', system-ui, sans-serif;
+      font-size: 12px;
+      color: #A3A3A3;
+      white-space: nowrap;
+      user-select: none;
+      /* pointer-events left on so hovering the label triggers mouseenter on parent */
+    }
+
+    .toc-bar {
+      height: 1.5px;
+      border-radius: 2px;
+      background: #E5E5E5;
+      /* width controlled by GSAP */
+      width: 6px;
+      transform-origin: right center;
+    }
+
+    /* ── Scroll fade-in for sections on load ───────── */
+    .section {
+      opacity: 0;
+      transform: translateY(14px);
+    }
+  </style>
+</head>
+<body>
+
+  <!-- ── TOC (built by JS) ── -->
+  <nav id="toc" aria-label="Page sections"></nav>
+
+  <!-- ── Page content ── -->
+  <main class="page">
+
+    <img src="../assets/the-planet/globe icon.svg" alt="Globe" class="globe" />
+
+    <div id="s0" class="section">
+      <h1 class="page-title">The<br>Planet</h1>
+    </div>
+
+    <div class="section-divider"><div class="divider-line"></div></div>
+
+    <section id="s1" class="section">
+      <div class="heading-row">
+        <img src="../assets/the-planet/link-to-section icon.svg" alt="" class="link-icon" aria-hidden="true" />
+        <h2 class="section-heading">The Planet We Call Home</h2>
+      </div>
+      <p class="section-body">Earth is the third planet from the Sun and the only known place in the universe where life exists. It is a rocky planet with vast oceans, continents, mountains, and diverse ecosystems that support millions of species. Earth's atmosphere provides oxygen for living organisms and protects the planet from harmful radiation, making it uniquely suited for sustaining life.</p>
+    </section>
+
+    <div class="section-divider"><div class="divider-line"></div></div>
+
+    <section id="s2" class="section">
+      <div class="heading-row">
+        <img src="../assets/the-planet/link-to-section icon.svg" alt="" class="link-icon" aria-hidden="true" />
+        <h2 class="section-heading">Formation of the Earth</h2>
+      </div>
+      <p class="section-body">Scientists believe Earth formed about 4.5 billion years ago from a cloud of dust and gas left over from the formation of the Sun. Through a process called accretion, particles collided and gradually stuck together, eventually forming a large, solid planet. Early Earth was extremely hot and unstable, but over time it cooled, allowing oceans to form and creating conditions that would later support life.</p>
+    </section>
+
+    <div class="section-divider"><div class="divider-line"></div></div>
+
+    <section id="s3" class="section">
+      <div class="heading-row">
+        <img src="../assets/the-planet/link-to-section icon.svg" alt="" class="link-icon" aria-hidden="true" />
+        <h2 class="section-heading">Structure and Physical Features</h2>
+      </div>
+      <p class="section-body">Earth is composed of several layers: the crust, mantle, and core. The crust is the thin outer layer where continents and oceans exist, while the mantle beneath it is made of hot, slowly moving rock. At the center lies the core, which is extremely dense and hot. The movement of tectonic plates within the crust shapes Earth's surface, creating mountains, earthquakes, and volcanic activity over long periods of time.</p>
+    </section>
+
+    <div class="section-divider"><div class="divider-line"></div></div>
+
+    <section id="s4" class="section">
+      <div class="heading-row">
+        <img src="../assets/the-planet/link-to-section icon.svg" alt="" class="link-icon" aria-hidden="true" />
+        <h2 class="section-heading">Earth's Environment and Life</h2>
+      </div>
+      <p class="section-body">Earth's environment supports a vast range of life forms, from microscopic organisms to large animals and plants. Water covers about 70% of the planet's surface, playing a crucial role in regulating temperature and supporting ecosystems. The atmosphere, composed mainly of nitrogen and oxygen, maintains a stable climate and shields the planet from harmful solar radiation.</p>
+    </section>
+
+    <div class="section-divider"><div class="divider-line"></div></div>
+
+    <section id="s5" class="section">
+      <div class="heading-row">
+        <img src="../assets/the-planet/link-to-section icon.svg" alt="" class="link-icon" aria-hidden="true" />
+        <h2 class="section-heading">Earth's Climate and Natural Systems</h2>
+      </div>
+      <p class="section-body">Earth's climate is regulated by complex natural systems that interact with one another. The atmosphere, oceans, land, and living organisms constantly exchange energy and materials through cycles such as the water cycle, carbon cycle, and nitrogen cycle. These systems help maintain the planet's balance, influencing weather patterns, temperatures, and ecosystems across the globe.</p>
+    </section>
+
+    <div class="section-divider"><div class="divider-line"></div></div>
+
+    <section id="s6" class="section">
+      <div class="heading-row">
+        <img src="../assets/the-planet/link-to-section icon.svg" alt="" class="link-icon" aria-hidden="true" />
+        <h2 class="section-heading">Humanity and the Future of Earth</h2>
+      </div>
+      <p class="section-body">Humans have become one of the most influential forces shaping the planet. Through science, technology, and exploration, people have learned more about Earth's systems and how they function. At the same time, human activities such as industrialization and resource consumption have significant impacts on the environment. Understanding and protecting Earth is essential to ensuring that the planet continues to support life for future generations.</p>
+    </section>
+
+    <div class="section-divider"><div class="divider-line"></div></div>
+
+    <section id="s7" class="section">
+      <div class="heading-row">
+        <img src="../assets/the-planet/link-to-section icon.svg" alt="" class="link-icon" aria-hidden="true" />
+        <h2 class="section-heading">Earth in the Solar System</h2>
+      </div>
+      <p class="section-body">Earth is part of a larger cosmic neighborhood known as the solar system. It orbits the Sun once every 365 days and rotates on its axis every 24 hours, creating the cycle of day and night. The Moon, Earth's natural satellite, influences ocean tides and stabilizes the planet's rotation. Together with the Sun and other planets, Earth forms part of a dynamic system that continues to evolve over time.</p>
+    </section>
+
+    <!-- Decorative bottom globe — 520×520, top half visible only -->
+    <div class="bottom-globe-wrap">
+      <img src="../assets/the-planet/globe icon.svg" alt="" class="bottom-globe" />
+    </div>
+
+  </main>
+
+  <script>
+    /* ── Section manifest ────────────────────────────── */
+    const SECTIONS = [
+      { id: 's0', label: 'The Planet' },
+      { id: 's1', label: 'The Planet We Call Home' },
+      { id: 's2', label: 'Formation of the Earth' },
+      { id: 's3', label: 'Structure and Physical Features' },
+      { id: 's4', label: "Earth's Environment and Life" },
+      { id: 's5', label: "Earth's Climate and Natural Systems" },
+      { id: 's6', label: 'Humanity and the Future of Earth' },
+      { id: 's7', label: 'Earth in the Solar System' },
+    ];
+
+    /* ── Bar width + color logic ─────────────────────── */
+    const BAR_ACTIVE = 32;  // active bar (px)
+    const BAR_INACTIVE = 12; // furthest bar (px)
+
+    // Active bar is unmistakably prominent; adjacent gets a hint; rest are minimal
+    function barWidth(barIdx, activeIdx) {
+      const dist = Math.abs(barIdx - activeIdx);
+      if (dist === 0) return 28;  // active — very wide
+      if (dist === 1) return 10;  // adjacent — small hint
+      return 6;                   // everything else — minimal
+    }
+
+    // Binary: active = #737373, all others = #E5E5E5
+    function barColor(barIdx, activeIdx) {
+      return barIdx === activeIdx ? '#737373' : '#E5E5E5';
+    }
+
+    /* ── Build TOC ───────────────────────────────────── */
+    const toc      = document.getElementById('toc');
+    const tocItems = [];
+    const tocBars  = [];
+    const tocLabels = [];
+
+    SECTIONS.forEach((sec, i) => {
+      const item  = document.createElement('div');
+      item.className = 'toc-item';
+      item.setAttribute('role', 'button');
+      item.setAttribute('aria-label', `Go to: ${sec.label}`);
+      item.tabIndex = 0;
+
+      const label = document.createElement('span');
+      label.className = 'toc-label';
+      label.textContent = sec.label;
+
+      const bar = document.createElement('div');
+      bar.className = 'toc-bar';
+
+      item.appendChild(label);
+      item.appendChild(bar);
+      toc.appendChild(item);
+
+      // GSAP owns the label's initial state
+      gsap.set(label, { opacity: 0, x: 8, filter: 'blur(3px)', yPercent: -50 });
+
+      tocItems.push(item);
+      tocBars.push(bar);
+      tocLabels.push(label);
+
+      /* click → smooth scroll via Lenis */
+      item.addEventListener('click', () => {
+        lenis.scrollTo(document.getElementById(sec.id), {
+          offset: -40,
+          duration: 1.4,
+          easing: t => 1 - Math.pow(1 - t, 4), // quartic ease-out
+        });
+      });
+      item.addEventListener('keydown', e => {
+        if (e.key === 'Enter' || e.key === ' ') {
+          lenis.scrollTo(document.getElementById(sec.id), {
+            offset: -40,
+            duration: 1.4,
+            easing: t => 1 - Math.pow(1 - t, 4),
+          });
+        }
+      });
+
+      /* hover → reveal label 8px from bar, quality blur+slide */
+      item.addEventListener('mouseenter', () => {
+        gsap.killTweensOf(label);
+        gsap.to(label, {
+          opacity: 1,
+          x: 0,
+          filter: 'blur(0px)',
+          duration: 0.35,
+          ease: 'power4.out',
+        });
+      });
+      item.addEventListener('mouseleave', () => {
+        gsap.killTweensOf(label);
+        gsap.to(label, {
+          opacity: 0,
+          x: 8,
+          filter: 'blur(3px)',
+          duration: 0.25,
+          ease: 'power3.in',
+        });
+      });
+    });
+
+    /* ── Active section tracking ─────────────────────── */
+    let activeIdx   = 0;
+    let animating   = false;
+
+    const sectionEls = SECTIONS.map(s => document.getElementById(s.id));
+
+    function getActiveIndex() {
+      // Use a tight trigger just below the scroll-to offset (40px)
+      // so the section that is at the top of the viewport is always the active one
+      const trigger = window.scrollY + 60;
+      let active = 0;
+      for (let i = sectionEls.length - 1; i >= 0; i--) {
+        if (sectionEls[i] && sectionEls[i].offsetTop <= trigger) {
+          active = i;
+          break;
+        }
+      }
+      return active;
+    }
+
+    function updateTOC(newIdx, instant = false) {
+      if (newIdx === activeIdx && !instant) return;
+      activeIdx = newIdx;
+
+      tocBars.forEach((bar, i) => {
+        const w     = barWidth(i, activeIdx);
+        const color = barColor(i, activeIdx);
+
+        gsap.to(bar, {
+          width:           w,
+          backgroundColor: color,
+          duration:        instant ? 0 : 0.45,
+          ease:            'power3.out',
+          overwrite:       'auto',
+        });
+      });
+    }
+
+    /* ── Lenis smooth scroll ─────────────────────────── */
+    const lenis = new Lenis({
+      lerp: 0.08,          // 0 = instant, lower = more silky/delayed
+      smoothWheel: true,
+      smoothTouch: false,  // native on mobile is better
+      syncTouch: false,
+    });
+
+    // Feed Lenis into GSAP's rAF loop for perfect sync
+    gsap.ticker.add(time => lenis.raf(time * 1000));
+    gsap.ticker.lagSmoothing(0); // prevent GSAP from compensating for tab inactivity
+
+    // TOC updates come from Lenis scroll event (not window.scroll)
+    lenis.on('scroll', () => {
+      updateTOC(getActiveIndex());
+    });
+
+    /* ── Entrance animations ─────────────────────────── */
+    // Stagger sections in as page loads
+    gsap.to('.section', {
+      opacity: 1,
+      y: 0,
+      duration: 0.6,
+      ease: 'power2.out',
+      stagger: 0.08,
+      delay: 0.1,
+    });
+
+    // TOC bars entrance — stagger from center out
+    gsap.fromTo(tocBars,
+      { scaleX: 0, opacity: 0 },
+      {
+        scaleX: 1,
+        opacity: 1,
+        duration: 0.5,
+        ease: 'power3.out',
+        stagger: { each: 0.06, from: 'center' },
+        delay: 0.3,
+        onComplete: () => {
+          // Set initial state after entrance
+          updateTOC(0, true);
+        }
+      }
+    );
+
+    /* ── Link icon hover animations ──────────────────── */
+    document.querySelectorAll('.heading-row').forEach(row => {
+      const icon    = row.querySelector('.link-icon');
+      const section = row.closest('.section');
+      const idx     = sectionEls.indexOf(section); // maps heading to its TOC index
+
+      // Set GSAP's starting state (so it owns the transform, not CSS)
+      gsap.set(icon, { opacity: 0, scale: 0.4, rotation: -20, x: -4 });
+
+      // Click → scroll section to 40px from top + immediately activate TOC bar
+      row.addEventListener('click', () => {
+        lenis.scrollTo(section, {
+          offset: -40,
+          duration: 1.4,
+          easing: t => 1 - Math.pow(1 - t, 4), // quartic ease-out
+        });
+        updateTOC(idx); // don't wait for scroll — activate immediately
+      });
+
+      row.addEventListener('mouseenter', () => {
+        gsap.killTweensOf(icon);
+        gsap.to(icon, {
+          opacity: 1,
+          scale: 1,
+          rotation: 0,
+          x: 0,
+          duration: 0.35,
+          ease: 'back.out(2.5)',  // snaps into place with a slight overshoot
+        });
+      });
+
+      row.addEventListener('mouseleave', () => {
+        gsap.killTweensOf(icon);
+        gsap.to(icon, {
+          opacity: 0,
+          scale: 0.5,
+          rotation: -15,
+          x: -3,
+          duration: 0.2,
+          ease: 'power2.in',
+        });
+      });
+    });
+  </script>
+</body>
+</html>
