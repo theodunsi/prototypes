@@ -1,0 +1,371 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Operations</title>
+
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Archivo:wght@400;500;600&display=swap" rel="stylesheet">
+
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/gsap.min.js"></script>
+
+  <style>
+    *, *::before, *::after {
+      font-family: 'Archivo', sans-serif;
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+
+    body {
+      background: #1E1E1E;
+      min-height: 100vh;
+      display: flex;
+      align-items: flex-start;
+      justify-content: center;
+      padding: 200px 24px 80px;
+      position: relative;
+      overflow-x: hidden;
+    }
+
+    /* Background SVG layer */
+    .bg-layer {
+      position: fixed;
+      inset: 0;
+      width: 100%;
+      height: 100%;
+      background-image: url('../assets/view-interaction/background.svg');
+      background-size: cover;
+      background-position: center;
+      background-repeat: no-repeat;
+      pointer-events: none;
+      z-index: 0;
+    }
+
+    /* ---- Logo mark ---- */
+    .logo-mark {
+      position: fixed;
+      top: 20px;
+      left: 20px;
+      width: 30px;
+      height: 30px;
+      border-radius: 50%;
+      border: 1px solid #333;
+      overflow: hidden;
+    }
+    .logo-mark::before {
+      content: '';
+      display: block;
+      width: 100%;
+      height: 100%;
+      background: conic-gradient(#fff 0deg 180deg, #1A1A1A 180deg 360deg);
+      border-radius: 50%;
+    }
+
+    /* ---- Tabs ---- */
+    .tab-btn {
+      font-size: 14px;
+      font-weight: 400;
+      color: #555;
+      padding: 4px 8px;
+      border-radius: 6px;
+      cursor: pointer;
+      border: none;
+      background: transparent;
+      transition: color 0.2s, background 0.2s;
+      line-height: 1;
+    }
+    .tab-btn.active {
+      color: #FFFFFF;
+      background: #2D2D2D;
+    }
+    .tab-btn:not(.active):hover {
+      color: #999;
+    }
+
+    /* ---- View toggle buttons ---- */
+    .view-btn {
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      font-size: 14px;
+      font-weight: 400;
+      color: #484848;
+      padding: 4px 8px;
+      border-radius: 6px;
+      cursor: pointer;
+      border: none;
+      background: transparent;
+      transition: color 0.2s;
+      line-height: 1;
+    }
+    .view-btn img { opacity: 1; }
+    .view-btn.active { color: #FFFFFF; }
+    .view-btn:disabled { pointer-events: none; }
+
+    /* ---- Items wrapper ---- */
+    #items-container {
+      display: flex;
+      flex-direction: column;
+      gap: 12px;
+    }
+    #items-container.grid-mode {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 8px;
+    }
+
+    /* ---- Card ---- */
+    .item-card {
+      border-radius: 8px;
+      cursor: pointer;
+      will-change: transform;
+    }
+
+    /* List layout inside card */
+    .list-layout {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      padding: 4px 0;
+      border-radius: 8px;
+      background-color: rgba(37, 37, 37, 0);
+    }
+    .list-layout .l-name {
+      font-size: 16px;
+      font-weight: 400;
+      color: #E2E2E2;
+      flex: 1;
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+    }
+    .list-layout .l-meta {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      flex-shrink: 0;
+    }
+    .list-layout .l-date {
+      font-size: 14px;
+      color: #6B6B6B;
+    }
+
+    /* Grid layout inside card */
+    .grid-layout {
+      display: none;
+      flex-direction: column;
+      padding: 6px;
+      gap: 12px;
+      min-height: 140px;
+    }
+    .grid-layout .g-top {
+      display: flex;
+      justify-content: space-between;
+      align-items: flex-start;
+    }
+    .grid-layout .g-name {
+      font-size: 16px;
+      font-weight: 400;
+      color: #FFFFFF;
+      line-height: 1.45;
+      display: -webkit-box;
+      -webkit-line-clamp: 2;
+      -webkit-box-orient: vertical;
+      overflow: hidden;
+    }
+    .grid-layout .g-date {
+      font-size: 14px;
+      color: #6B6B6B;
+      margin-top: auto;
+    }
+
+    /* Grid mode overrides */
+    .grid-mode .item-card {
+      background: #252525;
+      border-radius: 10px;
+      border: 1px solid #303030;
+    }
+    .grid-mode .list-layout {
+      display: none;
+    }
+    .grid-mode .grid-layout {
+      display: flex;
+    }
+  </style>
+</head>
+<body>
+
+  <!-- Background layer -->
+  <div class="bg-layer"></div>
+
+  <!-- Logo mark top-left -->
+  <div class="logo-mark" style="z-index: 1;"></div>
+
+  <!-- Main content -->
+  <div style="width: 100%; max-width: 500px; position: relative; z-index: 1;">
+
+    <!-- Heading -->
+    <div style="display: flex; align-items: center; gap: 4px; margin-bottom: 20px;">
+      <img src="../assets/view-interaction/folder-03.svg" width="24" height="24" alt="">
+      <h1 style="font-size: 20px; font-weight: 500; color: #FFFFFF; line-height: 1;">Operations</h1>
+    </div>
+
+    <!-- Controls row -->
+    <div style="display: flex; align-items: center; justify-content: space-between; margin-bottom: 20px;">
+      <!-- Tabs -->
+      <div style="display: flex; gap: 6px;">
+        <button class="tab-btn active" data-tab>All</button>
+        <button class="tab-btn" data-tab>Active</button>
+        <button class="tab-btn" data-tab>Backlog</button>
+      </div>
+      <!-- View toggles -->
+      <div style="display: flex; align-items: center; gap: 2px;">
+        <button class="view-btn active" id="list-btn" onclick="setView('list')">
+          List
+          <img id="list-icon" src="../assets/view-interaction/list-view.svg" width="16" height="16" alt="">
+        </button>
+        <div style="width: 1px; height: 15px; background: rgba(255,255,255,0.12); flex-shrink: 0;"></div>
+        <button class="view-btn" id="grid-btn" onclick="setView('grid')">
+          Grid
+          <img id="grid-icon" src="../assets/view-interaction/grid-view.svg" width="16" height="16" alt="">
+        </button>
+      </div>
+    </div>
+
+    <!-- Items -->
+    <div id="items-container"></div>
+
+  </div>
+
+  <script>
+    const ITEMS = [
+      { name: "Automatic Pushes(Main or Beta)",   date: "Sep 2025", avatar: "avatar.svg",   chart: "bar-chart.svg"   },
+      { name: "New Message Center 2.0 for users", date: "Nov 2025", avatar: "avatar-1.svg", chart: "bar-chart-1.svg" },
+      { name: "Drafts for events",                date: "Nov 2025", avatar: "avatar-2.svg", chart: "bar-chart-2.svg" },
+      { name: "Error page UI design",             date: "Nov 2025", avatar: "avatar-2.svg", chart: "bar-chart.svg"   },
+      { name: "Dark Mode for mobile",             date: "Dec 2025", avatar: "avatar-1.svg", chart: "bar-chart-1.svg" },
+      { name: "Badges ranking system",            date: "Jan 2026", avatar: "avatar.svg",   chart: "bar-chart-2.svg" },
+    ];
+
+    const ASSETS = '../assets/view-interaction/';
+    const container = document.getElementById('items-container');
+    let currentView = 'list';
+    let isAnimating = false;
+
+    // Build cards
+    ITEMS.forEach(item => {
+      const card = document.createElement('div');
+      card.className = 'item-card';
+      card.innerHTML = `
+        <div class="list-layout">
+          <img src="${ASSETS}${item.chart}" width="24" height="24" alt="">
+          <span class="l-name">${item.name}</span>
+          <div class="l-meta">
+            <img src="${ASSETS}${item.avatar}" width="20" height="20" alt="">
+            <span class="l-date">${item.date}</span>
+          </div>
+        </div>
+        <div class="grid-layout">
+          <div class="g-top">
+            <img src="${ASSETS}${item.chart}" width="24" height="24" alt="">
+            <img src="${ASSETS}${item.avatar}" width="20" height="20" alt="">
+          </div>
+          <span class="g-name">${item.name}</span>
+          <span class="g-date">${item.date}</span>
+        </div>
+      `;
+      container.appendChild(card);
+
+      const listEl = card.querySelector('.list-layout');
+      const gridEl = card.querySelector('.grid-layout');
+
+      card.addEventListener('mouseenter', () => {
+        if (currentView === 'list') {
+          gsap.killTweensOf(listEl);
+          gsap.to(listEl, { paddingTop: 8, paddingBottom: 8, paddingLeft: 8, paddingRight: 8, backgroundColor: '#252525', duration: 0.2, ease: 'power2.out' });
+        } else {
+          gsap.killTweensOf([card, gridEl]);
+          gsap.to(gridEl, { padding: '8px', duration: 0.2, ease: 'power2.out' });
+          gsap.to(card,   { backgroundColor: '#2C2C2C', duration: 0.2, ease: 'power2.out' });
+        }
+      });
+
+      card.addEventListener('mouseleave', () => {
+        if (currentView === 'list') {
+          gsap.killTweensOf(listEl);
+          gsap.to(listEl, { paddingTop: 4, paddingBottom: 4, paddingLeft: 0, paddingRight: 0, backgroundColor: 'rgba(37,37,37,0)', duration: 0.2, ease: 'power2.out' });
+        } else {
+          gsap.killTweensOf([card, gridEl]);
+          gsap.to(gridEl, { padding: '6px', duration: 0.2, ease: 'power2.out' });
+          gsap.to(card,   { backgroundColor: '#252525', duration: 0.2, ease: 'power2.out' });
+        }
+      });
+    });
+
+    // Tab switching
+    document.querySelectorAll('[data-tab]').forEach(btn => {
+      btn.addEventListener('click', function () {
+        document.querySelectorAll('[data-tab]').forEach(b => b.classList.remove('active'));
+        this.classList.add('active');
+      });
+    });
+
+    // View switch — fade out, swap layout, fade up in
+    function setView(view) {
+      if (view === currentView || isAnimating) return;
+      isAnimating = true;
+      currentView = view;
+
+      document.getElementById('list-btn').classList.toggle('active', view === 'list');
+      document.getElementById('grid-btn').classList.toggle('active', view === 'grid');
+
+      // Swap icons based on active state
+      document.getElementById('list-icon').src = view === 'list'
+        ? '../assets/view-interaction/list-view.svg'
+        : '../assets/view-interaction/list-view-notActive.svg';
+      document.getElementById('grid-icon').src = view === 'grid'
+        ? '../assets/view-interaction/grid-view-active.svg'
+        : '../assets/view-interaction/grid-view.svg';
+
+      const cards = document.querySelectorAll('.item-card');
+
+      // Reset any lingering hover states before animating out
+      cards.forEach(c => {
+        gsap.killTweensOf([c, c.querySelector('.list-layout'), c.querySelector('.grid-layout')]);
+        gsap.set(c.querySelector('.list-layout'), { paddingTop: 4, paddingBottom: 4, paddingLeft: 0, paddingRight: 0, backgroundColor: 'rgba(37,37,37,0)' });
+        gsap.set(c, { backgroundColor: '' });
+      });
+
+      // Fade out — quick and clean
+      gsap.to(cards, {
+        opacity: 0,
+        y: -4,
+        duration: 0.18,
+        ease: 'power2.in',
+        onComplete: () => {
+          // Switch layout while invisible
+          container.classList.toggle('grid-mode', view === 'grid');
+
+          // Reset y before entrance
+          gsap.set(cards, { y: 6 });
+
+          // Fade in — subtle rise, light stagger
+          gsap.to(cards, {
+            opacity: 1,
+            y: 0,
+            duration: 0.28,
+            ease: 'power2.out',
+            stagger: 0.025,
+            onComplete: () => { isAnimating = false; }
+          });
+        }
+      });
+    }
+  </script>
+
+</body>
+</html>
