@@ -1,0 +1,1 @@
+Happy birthday Tomiwa, my day one since 2015 🥹 We’ve been through so much laughs, chaos, glow-ups and and we are still pushing through you’re technically the older one now😏, you don dey old oo😂❤️ Love you❤️. Hope today treats you like the queen you are.
