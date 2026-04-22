@@ -84,11 +84,6 @@ export default function Reveal({ fullName, onDone }) {
   const parts = (fullName || '').trim().split(/\s+/)
   const longest = parts.reduce((a, b) => (b.length > a.length ? b : a), '')
 
-  useEffect(() => {
-    const t = setTimeout(onDone, 4800)
-    return () => clearTimeout(t)
-  }, [onDone])
-
   return (
     <AnimatePresence>
       <motion.div
@@ -187,6 +182,20 @@ export default function Reveal({ fullName, onDone }) {
           >
             my Tom Tom
           </motion.p>
+
+          {/* The forward button — sits patiently after everything has landed */}
+          <motion.button
+            type="button"
+            onClick={onDone}
+            initial={{ opacity: 0, y: 12 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.7, delay: 3.1, ease }}
+            className="mt-8 inline-flex items-center gap-3 rounded-card border border-parchment/35 bg-parchment/0 px-7 py-3.5 font-body text-quiet uppercase tracking-[0.18em] text-parchment transition-colors duration-150 ease-paper hover:border-parchment/70 hover:bg-parchment hover:text-iris"
+            aria-label="Continue to your birthday gift"
+          >
+            <span>let’s goooo</span>
+            <span aria-hidden className="text-base leading-none">→</span>
+          </motion.button>
         </div>
       </motion.div>
     </AnimatePresence>
