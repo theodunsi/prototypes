@@ -1,79 +1,74 @@
-import { useEffect, useState } from 'react'
-import { motion } from 'framer-motion'
-import { LavenderSprig, PressedDaisy, Heart, StarScatter } from './Sprigs.jsx'
+import { useEffect, useRef, useState } from 'react'
+import { motion, useScroll, useTransform } from 'framer-motion'
+import {
+  LavenderSprig, PressedDaisy, Heart, StarScatter, Butterfly,
+  Bow, Heels, PerfumeBottle, DiamondRing,
+} from './Sprigs.jsx'
 
 const ease = [0.16, 1, 0.3, 1]
 
-// Couple photos scattered in the left/right margins of the letter column.
-// Tuned by hand so none of them block reading space on any viewport.
-const LEFT_PHOTOS = [
-  { src: '/assets/couple/IMG_1146.jpg', top: '4%',  left: '2%',  tilt: -5, size: 'md' },
-  { src: '/assets/couple/IMG_6491.jpg', top: '38%', left: '1%',  tilt: 3,  size: 'sm' },
-  { src: '/assets/couple/IMG_8364.jpg', top: '72%', left: '3%',  tilt: -4, size: 'md' },
-]
-const RIGHT_PHOTOS = [
-  { src: '/assets/couple/053786d2-6612-47c2-ab5e-3a9a4d7283ad.JPG', top: '10%', right: '2%', tilt: 4,  size: 'sm' },
-  { src: '/assets/couple/0aca0e2e-36a3-4961-ba47-5b784daa49e3.JPG', top: '48%', right: '1%', tilt: -3, size: 'md' },
-  { src: '/assets/couple/15fe2a4e-6e91-458c-aa61-4edebe576dbd.JPG', top: '80%', right: '3%', tilt: 5,  size: 'sm' },
-]
-const MOBILE_CLUSTER = [
+// ALL couple photos — split into two rails that scroll past the letter on
+// either side. Deliberately big (hero-scale) so the scroll feels dramatic.
+const LEFT_RAIL = [
   '/assets/couple/IMG_1146.jpg',
   '/assets/couple/053786d2-6612-47c2-ab5e-3a9a4d7283ad.JPG',
   '/assets/couple/IMG_6491.jpg',
+  '/assets/couple/6c3f2eb2-ebc6-4d3d-b179-1fc57427bd65.JPG',
+  '/assets/couple/IMG_8364.jpg',
+  '/assets/couple/ad8dc3be-46ff-4596-b32a-0314934288a1.JPG',
+]
+const RIGHT_RAIL = [
+  '/assets/couple/tomiwa-1.jpg',
+  '/assets/couple/IMG_1334.jpg',
   '/assets/couple/0aca0e2e-36a3-4961-ba47-5b784daa49e3.JPG',
+  '/assets/couple/15fe2a4e-6e91-458c-aa61-4edebe576dbd.JPG',
+  '/assets/couple/IMG_6456.jpg',
+  '/assets/couple/EFD94C60-68D9-44F1-B7F8-6E0339DC7161.jpg',
 ]
 
-const sizeClass = {
-  sm: 'h-[140px] w-[110px] lg:h-[180px] lg:w-[140px]',
-  md: 'h-[180px] w-[140px] lg:h-[220px] lg:w-[170px]',
-}
+// Varied tilts so the stack doesn't look mechanical
+const TILTS_L = [-4, 3, -3, 5, -2, 4]
+const TILTS_R = [5, -3, 4, -4, 3, -5]
 
-function ScatteredPolaroid({ src, tilt, size, style }) {
+function RailPhoto({ src, tilt }) {
   return (
-    <motion.div
-      className="pointer-events-none absolute z-0"
-      style={style}
-      initial={{ opacity: 0, y: 20, rotate: tilt + (tilt > 0 ? 4 : -4) }}
-      whileInView={{ opacity: 1, y: 0, rotate: tilt }}
-      viewport={{ once: true, amount: 0.15 }}
-      transition={{ duration: 0.9, ease }}
-      aria-hidden
+    <div
+      className="relative mx-auto mb-12 lg:mb-14"
+      style={{ transform: `rotate(${tilt}deg)` }}
     >
-      <motion.div
-        animate={{ y: [0, -4, 3, 0], rotate: [0, 1, -0.6, 0] }}
-        transition={{ duration: 16, repeat: Infinity, ease: 'easeInOut', delay: Math.random() * 2 }}
+      <div
         className="relative"
         style={{
           background: '#FAF4E7',
-          padding: '8px 8px 26px 8px',
-          boxShadow: '0 3px 6px rgba(0,0,0,0.35), 0 30px 60px -24px rgba(0,0,0,0.65)',
+          padding: '12px 12px 44px 12px',
+          boxShadow: '0 4px 8px rgba(0,0,0,0.35), 0 40px 80px -28px rgba(0,0,0,0.7)',
         }}
       >
         <span
-          aria-hidden className="absolute -top-2 left-1/2"
+          aria-hidden className="absolute -top-3 left-1/2"
           style={{
-            width: 42, height: 12,
-            background: 'rgba(200, 155, 60, 0.4)',
+            width: 72, height: 16,
+            background: 'rgba(200, 155, 60, 0.42)',
             border: '1px dashed rgba(203, 180, 212, 0.5)',
             transform: 'translateX(-50%) rotate(-5deg)',
           }}
         />
         <img
           src={src} alt="" loading="lazy" decoding="async"
-          width="300" height="360"
-          className={`block object-cover ${sizeClass[size]}`}
+          width="440" height="560"
+          className="block h-[340px] w-[260px] object-cover sm:h-[400px] sm:w-[310px] lg:h-[440px] lg:w-[340px]"
           style={{ objectPosition: 'center top', filter: 'saturate(0.96)' }}
         />
-      </motion.div>
-    </motion.div>
+      </div>
+    </div>
   )
 }
 
-function renderBlocks(text) {
+function renderCompactBlocks(text) {
   return text.trim().split(/\n\s*\n/).map((block, i) => {
     const lines = block.split('\n')
     return (
-      <p key={i} className="text-letter leading-[1.95]">
+      <p key={i}>
         {lines.map((line, j) => (
           <span key={j}>{line}{j < lines.length - 1 && <br />}</span>
         ))}
@@ -82,7 +77,7 @@ function renderBlocks(text) {
   })
 }
 
-export default function LetterAndUs({ meta }) {
+function LetterContent({ meta, compact = false }) {
   const [content, setContent] = useState('')
   useEffect(() => {
     fetch('/content/boyfriend/boyfriend-letter.md')
@@ -94,113 +89,162 @@ export default function LetterAndUs({ meta }) {
   const rest = split.slice(1).join('\n\n')
 
   return (
-    <section
-      className="relative w-full overflow-hidden px-6 py-40 sm:py-48"
-      style={{ background: '#1A1124' }}
-    >
-      {/* bloom atmosphere */}
+    <div className={compact ? 'text-parchment' : 'text-parchment'}>
+      <p className={`font-body uppercase tracking-[0.32em] text-bloom/70 ${compact ? 'text-[0.62rem]' : 'text-micro'}`}>
+        a letter from me, to you
+      </p>
+      {greeting && (
+        <h2
+          className="mt-4 font-display italic font-light leading-[1.15] text-parchment"
+          style={{ fontSize: compact ? 'clamp(1.1rem, 2.6vw, 1.6rem)' : 'clamp(1.75rem, 4.2vw, 2.75rem)' }}
+        >
+          {greeting}
+        </h2>
+      )}
       <div
-        aria-hidden
-        className="pointer-events-none absolute left-1/2 top-1/2 size-[50rem] -translate-x-1/2 -translate-y-1/2 rounded-full"
-        style={{ background: 'radial-gradient(circle, rgba(203,180,212,0.14), transparent 65%)' }}
-      />
-
-      {/* ornaments — lighter on dark */}
-      <LavenderSprig
-        stroke="#CBB4D4" bloom="#EFE3EC"
-        className="pointer-events-none absolute hidden md:block"
-        style={{ top: '6%', left: '3%', opacity: 0.55, transform: 'rotate(-12deg)' }}
-      />
-      <PressedDaisy
-        petal="#FAF4E7" edge="#CBB4D4" center="#C89B3C"
-        className="pointer-events-none absolute hidden md:block"
-        style={{ top: '10%', right: '4%', opacity: 0.55, transform: 'rotate(14deg) scale(0.8)' }}
-      />
-      <Heart
-        stroke="#CBB4D4" stitch="#C89B3C"
-        className="pointer-events-none absolute"
-        style={{ top: '38%', left: '8%', opacity: 0.35, transform: 'rotate(-6deg)' }}
-      />
-      <StarScatter
-        fill="#C89B3C"
-        className="pointer-events-none absolute"
-        style={{ bottom: '14%', right: '10%', opacity: 0.55 }}
-      />
-      <LavenderSprig
-        stroke="#CBB4D4" bloom="#EFE3EC"
-        className="pointer-events-none absolute hidden lg:block"
-        style={{ bottom: '4%', left: '5%', opacity: 0.45, transform: 'rotate(8deg) scale(0.75)' }}
-      />
-
-      {/* Scattered couple polaroids — desktop only, in the side margins */}
-      <div className="pointer-events-none absolute inset-0 hidden md:block">
-        {LEFT_PHOTOS.map((p, i) => (
-          <ScatteredPolaroid key={`l${i}`} {...p} style={{ top: p.top, left: p.left }} />
-        ))}
-        {RIGHT_PHOTOS.map((p, i) => (
-          <ScatteredPolaroid key={`r${i}`} {...p} style={{ top: p.top, right: p.right }} />
-        ))}
-      </div>
-
-      {/* Mobile cluster of couple photos above the letter */}
-      <div className="mx-auto mb-16 flex max-w-md flex-wrap justify-center gap-4 md:hidden">
-        {MOBILE_CLUSTER.map((src, i) => (
-          <motion.div
-            key={src}
-            initial={{ opacity: 0, y: 18, rotate: (i % 2 === 0 ? -4 : 4) }}
-            whileInView={{ opacity: 1, y: 0, rotate: (i % 2 === 0 ? -3 : 3) }}
-            viewport={{ once: true, amount: 0.2 }}
-            transition={{ duration: 0.8, ease, delay: i * 0.1 }}
-            className="relative"
-            style={{
-              background: '#FAF4E7',
-              padding: '6px 6px 22px 6px',
-              boxShadow: '0 3px 6px rgba(0,0,0,0.35), 0 20px 40px -18px rgba(0,0,0,0.6)',
-            }}
-          >
-            <img
-              src={src} alt="" loading="lazy" decoding="async"
-              width="200" height="240"
-              className="block h-[110px] w-[88px] object-cover"
-              style={{ objectPosition: 'center top', filter: 'saturate(0.96)' }}
-            />
-          </motion.div>
-        ))}
-      </div>
-
-      <motion.div
-        initial={{ opacity: 0, y: 24 }}
-        whileInView={{ opacity: 1, y: 0 }}
-        viewport={{ once: true, amount: 0.2 }}
-        transition={{ duration: 0.9, ease }}
-        className="relative z-10 mx-auto max-w-letter"
+        className={`${compact ? 'mt-5 space-y-3' : 'mt-10 space-y-7'} font-body text-parchment/88`}
+        style={compact
+          ? { fontSize: 'clamp(0.7rem, 0.95vw, 0.82rem)', lineHeight: '1.55' }
+          : { fontSize: '1.125rem', lineHeight: '1.9' }}
       >
-        <p className="font-body text-micro uppercase tracking-[0.32em] text-bloom/70">
-          a letter from me, to you
+        {renderCompactBlocks(rest)}
+      </div>
+      <div className={compact ? 'mt-6' : 'mt-16'}>
+        <p className={`font-body italic text-parchment/60 ${compact ? 'text-[0.78rem]' : 'text-letter'}`}>
+          with my whole heart,
         </p>
+        <p className={`font-hand text-bloom ${compact ? 'text-2xl' : 'text-3xl sm:text-4xl'}`}>
+          — {meta.from.nickname || meta.from.name.split(' ')[0]}
+        </p>
+      </div>
+    </div>
+  )
+}
 
-        {greeting && (
-          <h2
-            className="mt-8 font-display italic font-light leading-[1.1] text-parchment"
-            style={{ fontSize: 'clamp(1.75rem, 4.2vw, 2.75rem)' }}
+export default function LetterAndUs({ meta }) {
+  const sectionRef = useRef(null)
+  const { scrollYProgress } = useScroll({
+    target: sectionRef,
+    offset: ['start start', 'end end'],
+  })
+  // Rails start below viewport and travel to well above viewport
+  const leftY  = useTransform(scrollYProgress, [0, 1], ['20vh', '-100%'])
+  const rightY = useTransform(scrollYProgress, [0, 1], ['40vh', '-100%'])
+
+  return (
+    <>
+      {/* DESKTOP: pinned scroll experience */}
+      <section
+        ref={sectionRef}
+        className="relative hidden w-full md:block"
+        style={{ height: '520vh', background: '#1A1124' }}
+      >
+        <div className="sticky top-0 flex h-dvh w-full items-center justify-center overflow-hidden">
+          {/* bloom atmosphere */}
+          <div
+            aria-hidden
+            className="pointer-events-none absolute left-1/2 top-1/2 size-[55rem] -translate-x-1/2 -translate-y-1/2 rounded-full"
+            style={{ background: 'radial-gradient(circle, rgba(203,180,212,0.16), transparent 65%)' }}
+          />
+
+          {/* ornaments — palette-overridden for dark */}
+          <LavenderSprig stroke="#CBB4D4" bloom="#EFE3EC"
+            className="pointer-events-none absolute" style={{ top: '4%', left: '32%', opacity: 0.55, transform: 'rotate(-10deg)' }} />
+          <PressedDaisy petal="#FAF4E7" edge="#CBB4D4" center="#C89B3C"
+            className="pointer-events-none absolute" style={{ top: '6%', right: '30%', opacity: 0.55, transform: 'rotate(14deg) scale(0.85)' }} />
+          <StarScatter fill="#C89B3C"
+            className="pointer-events-none absolute" style={{ top: '42%', left: '28%', opacity: 0.55 }} />
+          <Butterfly wing="#CBB4D4" edge="#6B3B5E" body="#CBB4D4"
+            className="pointer-events-none absolute" style={{ top: '46%', right: '28%', opacity: 0.5 }} />
+          <Heart stroke="#CBB4D4" stitch="#C89B3C"
+            className="pointer-events-none absolute" style={{ bottom: '10%', left: '30%', opacity: 0.45, transform: 'rotate(-6deg)' }} />
+          <DiamondRing band="#C89B3C" stone="#CBB4D4"
+            className="pointer-events-none absolute" style={{ bottom: '8%', right: '28%', opacity: 0.5 }} />
+          <Bow fill="#B87A6E" stroke="#CBB4D4"
+            className="pointer-events-none absolute" style={{ top: '22%', left: '44%', opacity: 0.45 }} />
+
+          {/* LEFT rail */}
+          <motion.div
+            style={{ y: leftY }}
+            className="absolute left-0 top-0 w-[360px] lg:w-[400px] xl:w-[420px]"
           >
-            {greeting}
-          </h2>
-        )}
+            {LEFT_RAIL.map((src, i) => (
+              <RailPhoto key={src} src={src} tilt={TILTS_L[i % TILTS_L.length]} />
+            ))}
+          </motion.div>
 
-        <div className="mt-10 space-y-7 font-body text-parchment/88">
-          {renderBlocks(rest)}
+          {/* RIGHT rail */}
+          <motion.div
+            style={{ y: rightY }}
+            className="absolute right-0 top-0 w-[360px] lg:w-[400px] xl:w-[420px]"
+          >
+            {RIGHT_RAIL.map((src, i) => (
+              <RailPhoto key={src} src={src} tilt={TILTS_R[i % TILTS_R.length]} />
+            ))}
+          </motion.div>
+
+          {/* LETTER — fixed at center, compressed to fit viewport */}
+          <div className="relative z-10 mx-auto max-h-[90vh] w-full max-w-[34rem] overflow-hidden px-8">
+            <LetterContent meta={meta} compact />
+          </div>
+        </div>
+      </section>
+
+      {/* MOBILE: regular flow, letter full-size, photos cluster above */}
+      <section
+        className="relative w-full overflow-hidden px-6 py-32 md:hidden"
+        style={{ background: '#1A1124' }}
+      >
+        <div
+          aria-hidden
+          className="pointer-events-none absolute left-1/2 top-1/2 size-[40rem] -translate-x-1/2 -translate-y-1/2 rounded-full"
+          style={{ background: 'radial-gradient(circle, rgba(203,180,212,0.14), transparent 65%)' }}
+        />
+        <LavenderSprig stroke="#CBB4D4" bloom="#EFE3EC"
+          className="pointer-events-none absolute" style={{ top: '5%', left: '4%', opacity: 0.5, transform: 'rotate(-10deg)' }} />
+        <Heart stroke="#CBB4D4" stitch="#C89B3C"
+          className="pointer-events-none absolute" style={{ top: '25%', right: '6%', opacity: 0.5 }} />
+        <StarScatter fill="#C89B3C"
+          className="pointer-events-none absolute" style={{ bottom: '20%', left: '4%', opacity: 0.5 }} />
+        <PressedDaisy petal="#FAF4E7" edge="#CBB4D4" center="#C89B3C"
+          className="pointer-events-none absolute" style={{ bottom: '6%', right: '6%', opacity: 0.5 }} />
+
+        {/* Photo cluster */}
+        <div className="relative z-[1] mx-auto mb-16 flex max-w-md flex-wrap justify-center gap-4">
+          {[...LEFT_RAIL.slice(0, 3), ...RIGHT_RAIL.slice(0, 3)].map((src, i) => (
+            <motion.div
+              key={src}
+              initial={{ opacity: 0, y: 18, rotate: i % 2 === 0 ? -4 : 4 }}
+              whileInView={{ opacity: 1, y: 0, rotate: i % 2 === 0 ? -3 : 3 }}
+              viewport={{ once: true, amount: 0.2 }}
+              transition={{ duration: 0.8, ease, delay: i * 0.08 }}
+              className="relative"
+              style={{
+                background: '#FAF4E7',
+                padding: '6px 6px 22px 6px',
+                boxShadow: '0 3px 6px rgba(0,0,0,0.35), 0 20px 40px -18px rgba(0,0,0,0.6)',
+              }}
+            >
+              <img
+                src={src} alt="" loading="lazy" decoding="async"
+                width="200" height="240"
+                className="block h-[120px] w-[95px] object-cover"
+                style={{ objectPosition: 'center top', filter: 'saturate(0.96)' }}
+              />
+            </motion.div>
+          ))}
         </div>
 
-        <div className="mt-16 flex flex-col gap-1">
-          <p className="font-body text-letter italic text-parchment/60">
-            with my whole heart,
-          </p>
-          <p className="font-hand text-3xl text-bloom sm:text-4xl">
-            — {meta.from.nickname || meta.from.name.split(' ')[0]}
-          </p>
-        </div>
-      </motion.div>
-    </section>
+        <motion.div
+          initial={{ opacity: 0, y: 20 }}
+          whileInView={{ opacity: 1, y: 0 }}
+          viewport={{ once: true, amount: 0.2 }}
+          transition={{ duration: 0.9, ease }}
+          className="relative z-[1] mx-auto max-w-letter"
+        >
+          <LetterContent meta={meta} compact={false} />
+        </motion.div>
+      </section>
+    </>
   )
 }
