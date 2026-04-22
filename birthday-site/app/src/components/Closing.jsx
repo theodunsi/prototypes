@@ -1,4 +1,5 @@
 import { motion } from 'framer-motion'
+import { LavenderSprig, PressedDaisy, StarScatter, Heart } from './Sprigs.jsx'
 
 const ease = [0.16, 1, 0.3, 1]
 
@@ -7,11 +8,19 @@ export default function Closing({ meta }) {
   const fromName = meta?.from?.nickname || meta?.from?.name?.split(' ')[0] || ''
 
   return (
-    <section className="relative flex min-h-[70vh] w-full items-center justify-center px-6 py-32">
-      {/* Tiny heart floating above the closing line */}
+    <section
+      className="relative flex min-h-[70vh] w-full items-center justify-center overflow-hidden px-6 py-32"
+      style={{ background: 'linear-gradient(180deg, #E8D9E0 0%, #F3EADA 100%)' }}
+    >
+      {/* ornaments */}
+      <LavenderSprig className="pointer-events-none absolute hidden md:block" style={{ top: '12%', left: '6%', opacity: 0.7, transform: 'rotate(-12deg)' }} />
+      <PressedDaisy className="pointer-events-none absolute" style={{ top: '10%', right: '8%', opacity: 0.65, transform: 'rotate(18deg)' }} />
+      <StarScatter className="pointer-events-none absolute hidden sm:block" style={{ bottom: '20%', left: '8%', opacity: 0.6 }} />
+      <PressedDaisy className="pointer-events-none absolute" style={{ bottom: '12%', right: '10%', opacity: 0.6, transform: 'rotate(-18deg) scale(0.75)' }} />
+
       <motion.svg
-        viewBox="0 0 60 54" width="44" height="40"
-        className="pointer-events-none absolute left-1/2 top-[14%] -translate-x-1/2"
+        viewBox="0 0 60 54" width="48" height="44"
+        className="pointer-events-none absolute left-1/2 top-[16%] -translate-x-1/2"
         aria-hidden
         initial={{ opacity: 0, y: 10 }}
         whileInView={{ opacity: 0.85, y: 0 }}

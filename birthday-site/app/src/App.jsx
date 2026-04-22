@@ -5,8 +5,7 @@ import Reveal from './components/Reveal.jsx'
 import Hero from './components/Hero.jsx'
 import ChildhoodGallery from './components/ChildhoodGallery.jsx'
 import FriendNotes from './components/FriendNotes.jsx'
-import Couple from './components/Couple.jsx'
-import Letter from './components/Letter.jsx'
+import LetterAndUs from './components/LetterAndUs.jsx'
 import Closing from './components/Closing.jsx'
 import MusicToggle from './components/MusicToggle.jsx'
 import { useMeta } from './lib/meta.js'
@@ -50,10 +49,7 @@ export default function App() {
       )}
 
       {stage === STAGE.REVEAL && (
-        <Reveal
-          fullName={meta.her.name}
-          onDone={() => setStage(STAGE.SITE)}
-        />
+        <Reveal fullName={meta.her.name} onDone={() => setStage(STAGE.SITE)} />
       )}
 
       {stage === STAGE.SITE && (
@@ -61,8 +57,7 @@ export default function App() {
           <Hero meta={meta} />
           <ChildhoodGallery />
           <FriendNotes />
-          <Couple />
-          <Letter meta={meta} />
+          <LetterAndUs meta={meta} />
           <Closing meta={meta} />
           <MusicToggle />
         </>
