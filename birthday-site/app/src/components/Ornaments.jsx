@@ -152,6 +152,55 @@ function TapeStrip({ className = '', style, label }) {
   )
 }
 
+function MiniPolaroid({ src, alt, caption, className = '', style, dur = 19 }) {
+  return (
+    <motion.div
+      {...drift(dur, 4, 4, 2)}
+      className={`pointer-events-none relative ${className}`}
+      style={{
+        background: '#FAF4E7',
+        padding: '6px 6px 22px 6px',
+        boxShadow: '0 1px 2px rgba(28,19,32,0.08), 0 12px 28px -14px rgba(28,19,32,0.28)',
+        ...style,
+      }}
+      aria-hidden
+    >
+      {/* tape strip pinning the photo */}
+      <span
+        className="absolute -top-2 left-1/2 -translate-x-1/2"
+        style={{
+          width: 26, height: 10,
+          background: 'rgba(200, 155, 60, 0.32)',
+          border: '1px dashed rgba(107, 59, 94, 0.35)',
+          transform: 'translateX(-50%) rotate(-6deg)',
+        }}
+        aria-hidden
+      />
+      <img
+        src={src}
+        alt={alt}
+        loading="lazy"
+        decoding="async"
+        width="100"
+        height="120"
+        style={{
+          display: 'block',
+          width: '100px',
+          height: '120px',
+          objectFit: 'cover',
+          filter: 'saturate(0.92) contrast(0.97)',
+        }}
+      />
+      <span
+        className="absolute left-0 right-0 text-center font-hand text-[0.62rem] text-mulberry"
+        style={{ bottom: 4 }}
+      >
+        {caption}
+      </span>
+    </motion.div>
+  )
+}
+
 function Heart({ className = '', style }) {
   return (
     <motion.svg
@@ -226,6 +275,41 @@ export default function Ornaments() {
         style={{ bottom: '4%', left: '42%', transform: 'rotate(3deg)' }}
         label="04·24·26"
       />
+
+      {/* Three little polaroids of her — peeking like photos pinned to the page */}
+      <div
+        className="absolute hidden sm:block"
+        style={{ top: '14%', right: '14%', transform: 'rotate(8deg)' }}
+      >
+        <MiniPolaroid
+          src="/assets/celebrant/tomiwa-1.JPG"
+          alt="Tomiwa"
+          caption="my girl"
+          dur={21}
+        />
+      </div>
+      <div
+        className="absolute"
+        style={{ top: '46%', left: '6%', transform: 'rotate(-7deg)' }}
+      >
+        <MiniPolaroid
+          src="/assets/celebrant/tomiwa-02.JPG"
+          alt="Tomiwa"
+          caption="her"
+          dur={17}
+        />
+      </div>
+      <div
+        className="absolute hidden md:block"
+        style={{ bottom: '14%', right: '22%', transform: 'rotate(-4deg)' }}
+      >
+        <MiniPolaroid
+          src="/assets/celebrant/tomiwa-with-food.JPG"
+          alt="Tomiwa"
+          caption="favourite human"
+          dur={23}
+        />
+      </div>
     </div>
   )
 }
