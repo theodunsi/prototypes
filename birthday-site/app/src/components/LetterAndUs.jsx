@@ -91,30 +91,30 @@ function LetterContent({ meta, compact = false }) {
 
   return (
     <div className="text-parchment">
-      <p className={`font-body uppercase tracking-[0.32em] text-bloom/70 ${compact ? 'text-[0.76rem]' : 'text-micro'}`}>
+      <p className={`font-body uppercase tracking-[0.32em] text-bloom/70 ${compact ? 'text-[0.72rem]' : 'text-micro'}`}>
         a letter from me, to you
       </p>
       {greeting && (
         <h2
-          className="mt-4 font-display italic font-light leading-[1.15] text-parchment"
-          style={{ fontSize: compact ? 'clamp(1.25rem, 2.8vw, 1.65rem)' : 'clamp(1.75rem, 4.2vw, 2.75rem)' }}
+          className="mt-3 font-display italic font-light leading-[1.1] text-parchment"
+          style={{ fontSize: compact ? 'clamp(1.15rem, 2.4vw, 1.45rem)' : 'clamp(1.75rem, 4.2vw, 2.75rem)' }}
         >
           {greeting}
         </h2>
       )}
       <div
-        className={`${compact ? 'mt-4 space-y-3' : 'mt-10 space-y-7'} font-body text-parchment/88`}
+        className={`${compact ? 'mt-3 space-y-2.5' : 'mt-10 space-y-7'} font-body text-parchment/88`}
         style={compact
-          ? { fontSize: '0.97rem', lineHeight: '1.55' }
+          ? { fontSize: '0.9rem', lineHeight: '1.5' }
           : { fontSize: '1.125rem', lineHeight: '1.9' }}
       >
         {renderBlocks(rest)}
       </div>
-      <div className={compact ? 'mt-5' : 'mt-16'}>
-        <p className={`font-body italic text-parchment/60 ${compact ? 'text-[0.9rem]' : 'text-letter'}`}>
+      <div className={compact ? 'mt-4' : 'mt-16'}>
+        <p className={`font-body italic text-parchment/60 ${compact ? 'text-[0.82rem]' : 'text-letter'}`}>
           with my whole heart,
         </p>
-        <p className={`font-hand text-bloom ${compact ? 'text-2xl' : 'text-3xl sm:text-4xl'}`}>
+        <p className={`font-hand text-bloom ${compact ? 'text-xl' : 'text-3xl sm:text-4xl'}`}>
           — {meta.from.nickname || meta.from.name.split(' ')[0]}
         </p>
       </div>
@@ -128,10 +128,11 @@ export default function LetterAndUs({ meta }) {
     target: sectionRef,
     offset: ['start start', 'end end'],
   })
-  // Rails travel: start below viewport center, end above. Slightly different
-  // rates so they never move in lockstep.
-  const leftY  = useTransform(scrollYProgress, [0, 1], ['15vh', '-110%'])
-  const rightY = useTransform(scrollYProgress, [0, 1], ['35vh', '-110%'])
+  // Rails travel: start below viewport center, end with the LAST photo still
+  // visible at progress 1.0 — so when the sticky child unpins, the remaining
+  // photos scroll out together with the section (instead of ending on emptiness).
+  const leftY  = useTransform(scrollYProgress, [0, 1], ['15vh', '-78%'])
+  const rightY = useTransform(scrollYProgress, [0, 1], ['35vh', '-72%'])
 
   return (
     <>
@@ -187,13 +188,14 @@ export default function LetterAndUs({ meta }) {
 
           {/* LETTER — sits on top of rails, fixed in the middle column */}
           <div
-            className="relative z-[10] mx-auto w-full max-w-[32rem] px-8"
+            className="relative z-[10] mx-auto w-full max-w-[32rem]"
             style={{
-              maxHeight: '88vh',
+              maxHeight: '92vh',
               background: 'rgba(26, 17, 36, 0.88)',
-              padding: '28px 32px',
+              padding: '22px 26px',
               border: '1px solid rgba(203, 180, 212, 0.12)',
               backdropFilter: 'blur(2px)',
+              overflow: 'hidden',
             }}
           >
             <LetterContent meta={meta} compact />
