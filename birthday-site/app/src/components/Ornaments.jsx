@@ -290,7 +290,7 @@ export default function Ornaments() {
       </div>
       <div
         className="absolute"
-        style={{ top: '46%', left: '11%', transform: 'rotate(-7deg)' }}
+        style={{ top: '46%', left: '17%', transform: 'rotate(-7deg)' }}
       >
         <MiniPolaroid
           src="/assets/celebrant/tomiwa-02.JPG"
