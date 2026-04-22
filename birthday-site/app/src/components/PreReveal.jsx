@@ -3,6 +3,7 @@ import { Lock } from 'lucide-react'
 import { firstName } from '../lib/meta.js'
 import { pad } from '../lib/time.js'
 import { useCountdown } from '../hooks/useCountdown.js'
+import Ornaments from './Ornaments.jsx'
 
 const fade = {
   hidden: { opacity: 0, y: 8 },
@@ -29,14 +30,18 @@ export default function PreReveal({ meta, targetUTC, forceReady = false, onUnloc
   const her = firstName(meta.her.name)
 
   return (
-    <section className="relative mx-auto flex min-h-dvh max-w-letter flex-col items-center justify-center gap-14 px-6 py-20 text-center">
+    <section className="relative min-h-dvh w-full overflow-hidden">
       {/* Slow ambient bloom — purely opacity, off the compositor only */}
       <motion.div
         aria-hidden
-        className="pointer-events-none absolute left-1/2 top-1/3 -z-10 size-[36rem] -translate-x-1/2 -translate-y-1/2 rounded-full bg-bloom/20 blur-3xl"
+        className="pointer-events-none absolute left-1/2 top-1/2 -z-20 size-[40rem] -translate-x-1/2 -translate-y-1/2 rounded-full bg-bloom/25 blur-3xl"
         animate={{ opacity: [0.55, 0.85, 0.55] }}
         transition={{ duration: 9, repeat: Infinity, ease: 'easeInOut' }}
       />
+
+      <Ornaments />
+
+      <div className="relative mx-auto flex min-h-dvh max-w-letter flex-col items-center justify-center gap-14 px-6 py-20 text-center">
 
       <motion.p
         variants={fade} initial="hidden" animate="show" custom={0}
@@ -95,6 +100,7 @@ export default function PreReveal({ meta, targetUTC, forceReady = false, onUnloc
             : 'it opens at midnight, your time.'}
         </p>
       </motion.div>
+      </div>
     </section>
   )
 }
