@@ -1,8 +1,18 @@
+import { useMemo, useState } from 'react'
 import Shell from './components/Shell.jsx'
+import PreReveal from './components/PreReveal.jsx'
 import { useMeta, firstName } from './lib/meta.js'
+import { zonedDateToUTC } from './lib/time.js'
+import { previewMode, skipIntro } from './lib/flags.js'
 
 export default function App() {
   const { meta, error } = useMeta()
+  const [opened, setOpened] = useState(() => skipIntro())
+
+  const targetUTC = useMemo(() => {
+    if (!meta) return null
+    return zonedDateToUTC(meta.her.birthdate, meta.her.timezone)
+  }, [meta])
 
   if (error) {
     return (
@@ -16,61 +26,28 @@ export default function App() {
     )
   }
 
-  if (!meta) {
+  if (!meta) return <Shell><div className="min-h-dvh" /></Shell>
+
+  if (!opened) {
     return (
       <Shell>
-        <div className="flex min-h-dvh items-center justify-center" />
+        <PreReveal
+          meta={meta}
+          targetUTC={targetUTC}
+          forceReady={previewMode()}
+          onUnlock={() => setOpened(true)}
+        />
       </Shell>
     )
   }
 
+  // Placeholder until Pass 3 builds the reveal animation + Pass 4+ build the site.
   return (
     <Shell>
-      <section className="mx-auto flex min-h-dvh max-w-letter flex-col items-center justify-center gap-12 px-6 py-24 text-center">
-        <p className="font-body text-micro uppercase text-ash">token preview</p>
-
-        <h1 className="font-display text-5xl font-light leading-[1.05] tracking-tight text-iris md:text-7xl">
-          for {firstName(meta.her.name)}
-        </h1>
-
-        <p className="font-body text-letter italic text-ink/85">
-          {meta.site.tagline}
-        </p>
-
-        <p className="font-hand text-2xl text-mulberry">
-          — {firstName(meta.from.name)}
-        </p>
-
-        <div className="flex flex-wrap items-center justify-center gap-3 pt-6">
-          {[
-            ['parchment', '#F3EADA'],
-            ['paper', '#FAF4E7'],
-            ['ink', '#1C1320'],
-            ['iris', '#3B2A52'],
-            ['mulberry', '#6B3B5E'],
-            ['bloom', '#CBB4D4'],
-            ['rose', '#B87A6E'],
-            ['ochre', '#C89B3C'],
-            ['ash', '#837489'],
-          ].map(([name, hex]) => (
-            <div key={name} className="flex flex-col items-center gap-1.5">
-              <span
-                className="size-10 rounded-card shadow-polaroid ring-1 ring-ink/5"
-                style={{ background: hex }}
-                aria-hidden
-              />
-              <span className="font-body text-micro uppercase text-ash">{name}</span>
-            </div>
-          ))}
-        </div>
-
-        <div className="flex flex-col items-center gap-2 pt-4">
-          <p className="font-display text-2xl text-iris">Fraunces — display</p>
-          <p className="font-body text-read text-ink/80">
-            Source Serif 4 — body. Reads like a printed page.
-          </p>
-          <p className="font-hand text-xl text-mulberry">Homemade Apple — sign-off</p>
-        </div>
+      <section className="mx-auto flex min-h-dvh max-w-letter flex-col items-center justify-center gap-6 px-6 text-center">
+        <p className="font-body text-micro uppercase text-ash">opened</p>
+        <h1 className="font-display text-5xl text-iris">happy birthday, {firstName(meta.her.name)}</h1>
+        <p className="font-body text-quiet italic text-ash">(reveal animation and main site land in the next passes)</p>
       </section>
     </Shell>
   )
