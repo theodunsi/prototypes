@@ -166,20 +166,20 @@ export default function LetterAndUs({ meta }) {
           <Bow fill="#B87A6E" stroke="#CBB4D4"
             className="pointer-events-none absolute z-[2]" style={{ top: '22%', left: '44%', opacity: 0.45 }} />
 
-          {/* LEFT rail — absolute, top-aligned, height from content */}
+          {/* LEFT rail — 8px inset so tilted corners never clip the viewport */}
           <motion.div
-            style={{ y: leftY }}
-            className="absolute left-0 top-0 z-[3] w-[340px] lg:w-[380px] xl:w-[400px]"
+            style={{ y: leftY, left: 8 }}
+            className="absolute top-0 z-[3] w-[340px] lg:w-[380px] xl:w-[400px]"
           >
             {LEFT_RAIL.map((src, i) => (
               <RailPhoto key={src} src={src} tilt={TILTS_L[i % TILTS_L.length]} align="left" />
             ))}
           </motion.div>
 
-          {/* RIGHT rail */}
+          {/* RIGHT rail — 8px inset */}
           <motion.div
-            style={{ y: rightY }}
-            className="absolute right-0 top-0 z-[3] w-[340px] lg:w-[380px] xl:w-[400px]"
+            style={{ y: rightY, right: 8 }}
+            className="absolute top-0 z-[3] w-[340px] lg:w-[380px] xl:w-[400px]"
           >
             {RIGHT_RAIL.map((src, i) => (
               <RailPhoto key={src} src={src} tilt={TILTS_R[i % TILTS_R.length]} align="right" />
