@@ -1,8 +1,23 @@
 import { useEffect, useState } from 'react'
 import { motion } from 'framer-motion'
-import ReactMarkdown from 'react-markdown'
 
 const ease = [0.16, 1, 0.3, 1]
+
+function renderBlocks(text) {
+  return text.trim().split(/\n\s*\n/).map((block, i) => {
+    const lines = block.split('\n')
+    return (
+      <p key={i} className="text-letter leading-[1.9]">
+        {lines.map((line, j) => (
+          <span key={j}>
+            {line}
+            {j < lines.length - 1 && <br />}
+          </span>
+        ))}
+      </p>
+    )
+  })
+}
 
 export default function Letter({ meta }) {
   const [content, setContent] = useState('')
@@ -14,8 +29,7 @@ export default function Letter({ meta }) {
       .catch(() => setContent(''))
   }, [])
 
-  // Peel off the opening line ("To My Ethereal Queen ,") so we can treat it
-  // as a display greeting — the rest flows as prose.
+  // Peel the opening line — "To My Ethereal Queen ," — for display treatment
   const split = content.split(/\n\s*\n/).map((p) => p.trim()).filter(Boolean)
   const greeting = split[0] || ''
   const rest = split.slice(1).join('\n\n')
@@ -29,12 +43,10 @@ export default function Letter({ meta }) {
         transition={{ duration: 0.9, ease }}
         className="mx-auto max-w-letter"
       >
-        {/* eyebrow — what this is */}
         <p className="font-body text-micro uppercase tracking-[0.3em] text-ash">
           a letter from me, to you
         </p>
 
-        {/* opening greeting — Fraunces italic, display scale */}
         {greeting && (
           <h2
             className="mt-10 font-display italic font-light leading-[1.1] text-iris"
@@ -44,20 +56,10 @@ export default function Letter({ meta }) {
           </h2>
         )}
 
-        {/* body — Source Serif, wide leading, comfortable to read */}
-        <div className="prose-letter mt-10 space-y-7 font-body text-letter text-ink/88">
-          <ReactMarkdown
-            components={{
-              p: ({ children }) => <p className="text-letter leading-[1.9]">{children}</p>,
-              em: ({ children }) => <em className="italic text-mulberry">{children}</em>,
-              strong: ({ children }) => <strong className="text-iris">{children}</strong>,
-            }}
-          >
-            {rest}
-          </ReactMarkdown>
+        <div className="mt-10 space-y-7 font-body text-ink/88">
+          {renderBlocks(rest)}
         </div>
 
-        {/* sign-off — handwritten, warm */}
         <div className="mt-16 flex flex-col gap-1">
           <p className="font-body text-letter italic text-ink/70">
             with my whole heart,

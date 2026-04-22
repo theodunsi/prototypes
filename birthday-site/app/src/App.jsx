@@ -3,7 +3,11 @@ import Shell from './components/Shell.jsx'
 import PreReveal from './components/PreReveal.jsx'
 import Reveal from './components/Reveal.jsx'
 import Hero from './components/Hero.jsx'
+import ChildhoodGallery from './components/ChildhoodGallery.jsx'
+import FriendNotes from './components/FriendNotes.jsx'
+import Couple from './components/Couple.jsx'
 import Letter from './components/Letter.jsx'
+import Closing from './components/Closing.jsx'
 import MusicToggle from './components/MusicToggle.jsx'
 import { useMeta } from './lib/meta.js'
 import { zonedDateToUTC } from './lib/time.js'
@@ -55,12 +59,11 @@ export default function App() {
       {stage === STAGE.SITE && (
         <>
           <Hero meta={meta} />
+          <ChildhoodGallery />
+          <FriendNotes />
+          <Couple />
           <Letter meta={meta} />
-          <section className="flex min-h-[40vh] items-center justify-center px-6 py-32 text-center">
-            <p className="font-body text-quiet italic text-ash">
-              (through the years, the two of us, friend notes and closing — next passes)
-            </p>
-          </section>
+          <Closing meta={meta} />
           <MusicToggle />
         </>
       )}

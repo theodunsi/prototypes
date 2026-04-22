@@ -98,7 +98,7 @@ export default function Hero({ meta }) {
           <h1 className="mt-8 font-display font-light leading-[0.92] tracking-tight text-iris">
             <span
               className="block italic text-iris/90"
-              style={{ fontSize: 'clamp(2.25rem, 7vw, 4.25rem)' }}
+              style={{ fontSize: 'clamp(2rem, 6vw, 3.5rem)' }}
             >
               Happy Birthday,
             </span>
@@ -106,7 +106,7 @@ export default function Hero({ meta }) {
               <span
                 className="relative z-10 block text-mulberry"
                 style={{
-                  fontSize: 'clamp(4.5rem, 15vw, 10rem)',
+                  fontSize: 'clamp(3.75rem, 12.5vw, 8rem)',
                   letterSpacing: '-0.04em',
                 }}
               >
@@ -115,7 +115,7 @@ export default function Hero({ meta }) {
               {/* Ochre handwritten squiggle underline */}
               <motion.svg
                 viewBox="0 0 360 18"
-                className="absolute -bottom-3 left-0 w-[min(100%,22rem)]"
+                className="absolute -bottom-3 left-0 w-[min(100%,18rem)]"
                 height="18"
                 aria-hidden
                 initial={{ opacity: 0 }}
@@ -197,7 +197,7 @@ export default function Hero({ meta }) {
               loading="eager"
               fetchpriority="high"
               decoding="async"
-              className="block h-[420px] w-[320px] object-cover sm:h-[540px] sm:w-[420px] md:h-[640px] md:w-[500px]"
+              className="block h-[380px] w-[290px] object-cover sm:h-[480px] sm:w-[370px] md:h-[560px] md:w-[430px]"
               style={{ filter: 'saturate(0.95) contrast(0.98)' }}
             />
             {/* handwritten caption */}
