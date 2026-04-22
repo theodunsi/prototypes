@@ -97,7 +97,7 @@ export default function PreReveal({ meta, targetUTC, forceReady = false, onUnloc
         <p className="max-w-xs font-body text-quiet italic text-ash">
           {ready
             ? 'it’s time. press it whenever you’re ready.'
-            : 'it opens at midnight, your time.'}
+            : 'are you excitedddd?'}
         </p>
       </motion.div>
       </div>
