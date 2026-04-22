@@ -56,7 +56,7 @@ export default function PreReveal({ meta, targetUTC, forceReady = false, onUnloc
       >
         something for {her},
         <br />
-        <span className="italic text-mulberry">when the day arrives.</span>
+        <span className="italic text-mulberry">the love of my life.</span>
       </motion.h1>
 
       <motion.div
