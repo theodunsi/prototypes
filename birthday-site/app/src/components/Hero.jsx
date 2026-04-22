@@ -36,7 +36,7 @@ export default function Hero({ meta }) {
         aria-hidden
       >
         <p className="font-body text-micro uppercase tracking-[0.5em] text-ash" style={{ writingMode: 'vertical-rl', transform: 'rotate(180deg)' }}>
-          04 · 24 · 2026
+          04 · 23 · 2026
         </p>
       </motion.div>
 
@@ -129,7 +129,7 @@ export default function Hero({ meta }) {
               className="absolute -right-3 -top-3 flex size-10 items-center justify-center rounded-full bg-mulberry font-body text-[0.5rem] uppercase tracking-[0.18em] text-parchment"
               style={{ transform: 'rotate(12deg)', boxShadow: '0 2px 4px rgba(0,0,0,0.12)' }}
             >
-              04·24
+              04·23
             </span>
             <img
               src="/assets/celebrant/tomiwa-02.JPG"

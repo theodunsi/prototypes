@@ -76,7 +76,7 @@ export default function PreReveal({ meta, targetUTC, forceReady = false, onUnloc
           variants={fade} initial="hidden" animate="show" custom={1}
           className="font-display text-4xl font-light leading-[1.05] tracking-tight text-iris sm:text-6xl"
         >
-          something for {her},
+          for {her},
           <br />
           <span className="italic text-mulberry">the love of my life.</span>
         </motion.h1>

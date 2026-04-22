@@ -47,11 +47,10 @@ function Frame({ src, tilt, caption, size }) {
         <span
           aria-hidden className="absolute -top-3 left-1/2"
           style={{
-            width: 56, height: 16,
-            background: 'rgba(82, 54, 38, 0.7)',
-            border: '1px solid rgba(46, 28, 18, 0.55)',
-            transform: 'translateX(-50%) rotate(-5deg)',
-            boxShadow: '0 2px 4px rgba(0,0,0,0.22)',
+            width: 80, height: 18,
+            background: 'rgba(200, 155, 60, 0.4)',
+            border: '1px dashed rgba(107, 59, 94, 0.5)',
+            transform: 'translateX(-50%) rotate(-4deg)',
           }}
         />
         <img
@@ -104,7 +103,7 @@ export default function ChildhoodGallery() {
         transition={{ duration: 0.8, ease }}
         className="relative z-[1] mx-auto mb-16 max-w-3xl text-center"
       >
-        <p className="font-body text-micro uppercase tracking-[0.3em] text-ash">childhood, unsorted</p>
+        <p className="font-body text-micro uppercase tracking-[0.3em] text-ash">growing up</p>
         <h2 className="mt-5 font-display italic font-light leading-[1.02] text-iris"
           style={{ fontSize: 'clamp(2.25rem, 6.5vw, 4.25rem)' }}>
           you, before.

@@ -47,11 +47,10 @@ function RailPhoto({ src, tilt, align }) {
         <span
           aria-hidden className="absolute -top-3 left-1/2"
           style={{
-            width: 64, height: 18,
-            background: 'rgba(82, 54, 38, 0.72)',
-            border: '1px solid rgba(46, 28, 18, 0.55)',
-            transform: 'translateX(-50%) rotate(-5deg)',
-            boxShadow: '0 2px 4px rgba(0,0,0,0.25)',
+            width: 80, height: 18,
+            background: 'rgba(200, 155, 60, 0.4)',
+            border: '1px dashed rgba(107, 59, 94, 0.5)',
+            transform: 'translateX(-50%) rotate(-4deg)',
           }}
         />
         <img
@@ -92,7 +91,7 @@ function LetterContent({ meta, compact = false }) {
   return (
     <div className="text-parchment">
       <p className={`font-body uppercase tracking-[0.32em] text-bloom/70 ${compact ? 'text-[0.72rem]' : 'text-micro'}`}>
-        a letter from me, to you
+        from me, to you…
       </p>
       {greeting && (
         <h2

@@ -79,11 +79,10 @@ function Card({ slug, meta }) {
         <span
           aria-hidden className="absolute -top-3 left-1/2"
           style={{
-            width: 64, height: 18,
-            background: 'rgba(82, 54, 38, 0.7)',
-            border: '1px solid rgba(46, 28, 18, 0.55)',
-            transform: 'translateX(-50%) rotate(-6deg)',
-            boxShadow: '0 2px 4px rgba(0,0,0,0.22)',
+            width: 80, height: 18,
+            background: 'rgba(200, 155, 60, 0.4)',
+            border: '1px dashed rgba(107, 59, 94, 0.5)',
+            transform: 'translateX(-50%) rotate(-4deg)',
           }}
         />
         <div
