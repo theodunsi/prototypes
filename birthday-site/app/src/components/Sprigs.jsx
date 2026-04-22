@@ -220,6 +220,105 @@ export function DiamondRing({ band = '#C89B3C', stone = '#CBB4D4', edge = '#6B3B
   )
 }
 
+export function Cake({
+  base = '#6B3B5E', mid = '#B87A6E', top = '#CBB4D4',
+  candle = '#C89B3C', flame = '#B87A6E', edge = '#3B2A52',
+  dur = 16, className = '', style,
+}) {
+  return (
+    <motion.svg {...drift(dur, 3, 4, 2)} viewBox="0 0 80 90" width="80" height="90" className={className} style={style} aria-hidden>
+      {/* plate */}
+      <ellipse cx="40" cy="82" rx="30" ry="3" fill={edge} opacity="0.4" />
+      {/* bottom tier */}
+      <rect x="8" y="58" width="64" height="22" rx="2" fill={base} stroke={edge} strokeWidth="0.8" />
+      <path d="M10 62 Q 18 58, 26 62 T 42 62 T 58 62 T 72 62" stroke={top} strokeWidth="1.4" fill="none" opacity="0.6" />
+      {/* middle tier */}
+      <rect x="18" y="40" width="44" height="20" rx="2" fill={mid} stroke={edge} strokeWidth="0.8" />
+      <path d="M20 44 Q 26 40, 32 44 T 44 44 T 56 44 T 62 44" stroke={top} strokeWidth="1.2" fill="none" opacity="0.5" />
+      {/* top tier */}
+      <rect x="28" y="26" width="24" height="16" rx="1.5" fill={top} stroke={edge} strokeWidth="0.8" />
+      {/* candles */}
+      <rect x="32" y="16" width="2.5" height="12" fill={candle} />
+      <rect x="39" y="14" width="2.5" height="14" fill={candle} />
+      <rect x="46" y="16" width="2.5" height="12" fill={candle} />
+      {/* flames */}
+      <path d="M33 16 Q 31 12, 33 8 Q 35 12, 33 16 Z" fill={flame} />
+      <path d="M40 14 Q 38 10, 40 6 Q 42 10, 40 14 Z" fill={flame} />
+      <path d="M47 16 Q 45 12, 47 8 Q 49 12, 47 16 Z" fill={flame} />
+    </motion.svg>
+  )
+}
+
+export function Balloon({
+  body = '#6B3B5E', highlight = '#CBB4D4', string = '#3B2A52',
+  dur = 15, className = '', style,
+}) {
+  return (
+    <motion.svg {...drift(dur, 4, 6, 5)} viewBox="0 0 60 110" width="60" height="110" className={className} style={style} aria-hidden>
+      <ellipse cx="30" cy="38" rx="22" ry="28" fill={body} />
+      <ellipse cx="22" cy="28" rx="4" ry="6" fill={highlight} opacity="0.45" />
+      <path d="M28 65 L 32 65 L 34 70 L 26 70 Z" fill={body} stroke={string} strokeWidth="0.6" />
+      <path d="M30 70 Q 26 82, 32 92 Q 28 100, 30 108" stroke={string} strokeWidth="1" fill="none" strokeLinecap="round" />
+    </motion.svg>
+  )
+}
+
+export function PartyPopper({
+  cone = '#6B3B5E', cord = '#3B2A52',
+  a = '#C89B3C', b = '#CBB4D4', c = '#B87A6E',
+  dur = 13, className = '', style,
+}) {
+  return (
+    <motion.svg {...drift(dur, 3, 4, 4)} viewBox="0 0 90 90" width="90" height="90" className={className} style={style} aria-hidden>
+      {/* cone */}
+      <path d="M12 80 L 38 60 L 52 74 L 26 84 Z" fill={cone} stroke={cord} strokeWidth="1" />
+      {/* streamers / confetti */}
+      <path d="M42 58 C 48 44, 58 38, 68 34" stroke={a} strokeWidth="1.6" fill="none" strokeLinecap="round" />
+      <path d="M46 56 C 54 48, 64 48, 74 50" stroke={b} strokeWidth="1.4" fill="none" strokeLinecap="round" />
+      <path d="M44 52 C 52 36, 58 28, 58 18" stroke={c} strokeWidth="1.4" fill="none" strokeLinecap="round" />
+      {/* confetti bits */}
+      <circle cx="60" cy="20" r="2" fill={a} />
+      <rect x="72" y="30" width="3" height="3" fill={b} transform="rotate(20 73 31)" />
+      <circle cx="80" cy="42" r="1.8" fill={c} />
+      <rect x="66" y="46" width="3" height="3" fill={a} transform="rotate(-15 67 47)" />
+      <circle cx="54" cy="26" r="1.5" fill={b} />
+      <rect x="78" y="52" width="2.5" height="2.5" fill={c} transform="rotate(35 79 53)" />
+    </motion.svg>
+  )
+}
+
+export function GiftBox({
+  box = '#3B2A52', ribbon = '#C89B3C', accent = '#CBB4D4',
+  dur = 17, className = '', style,
+}) {
+  return (
+    <motion.svg {...drift(dur, 2, 3, 2)} viewBox="0 0 70 70" width="70" height="70" className={className} style={style} aria-hidden>
+      <rect x="8" y="26" width="54" height="38" rx="1" fill={box} />
+      <rect x="31" y="26" width="8" height="38" fill={ribbon} />
+      <rect x="8" y="41" width="54" height="6" fill={ribbon} />
+      <path d="M35 26 C 28 18, 20 18, 22 26 M 35 26 C 42 18, 50 18, 48 26" stroke={ribbon} strokeWidth="2.2" fill="none" strokeLinecap="round" />
+      <ellipse cx="31" cy="22" rx="6" ry="4" fill={ribbon} />
+      <ellipse cx="39" cy="22" rx="6" ry="4" fill={ribbon} />
+      <circle cx="35" cy="22" r="2" fill={accent} />
+    </motion.svg>
+  )
+}
+
+export function Candle({
+  wax = '#CBB4D4', wick = '#3B2A52', flame = '#C89B3C',
+  dur = 14, className = '', style,
+}) {
+  return (
+    <motion.svg {...drift(dur, 2, 3, 3)} viewBox="0 0 30 80" width="30" height="80" className={className} style={style} aria-hidden>
+      <rect x="10" y="28" width="10" height="46" rx="1" fill={wax} stroke="#6B3B5E" strokeWidth="0.8" />
+      <ellipse cx="15" cy="28" rx="5" ry="1.4" fill={wax} stroke="#6B3B5E" strokeWidth="0.8" />
+      <rect x="14" y="20" width="2" height="8" fill={wick} />
+      <path d="M15 20 Q 11 12, 15 4 Q 19 12, 15 20 Z" fill={flame} />
+      <path d="M15 18 Q 13 14, 15 8 Q 17 14, 15 18 Z" fill="#B87A6E" opacity="0.8" />
+    </motion.svg>
+  )
+}
+
 export function Ribbon({ stroke = '#6B3B5E', accent = '#CBB4D4', dur = 16, className = '', style }) {
   return (
     <motion.svg

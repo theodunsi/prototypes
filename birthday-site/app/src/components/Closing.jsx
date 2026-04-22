@@ -1,5 +1,5 @@
 import { motion } from 'framer-motion'
-import { LavenderSprig, PressedDaisy, StarScatter, Heart } from './Sprigs.jsx'
+import { LavenderSprig, PressedDaisy, StarScatter, Heart, Cake, Balloon } from './Sprigs.jsx'
 
 const ease = [0.16, 1, 0.3, 1]
 
@@ -14,9 +14,9 @@ export default function Closing({ meta }) {
     >
       {/* ornaments */}
       <LavenderSprig className="pointer-events-none absolute hidden md:block" style={{ top: '12%', left: '6%', opacity: 0.7, transform: 'rotate(-12deg)' }} />
-      <PressedDaisy className="pointer-events-none absolute" style={{ top: '10%', right: '8%', opacity: 0.65, transform: 'rotate(18deg)' }} />
-      <StarScatter className="pointer-events-none absolute hidden sm:block" style={{ bottom: '20%', left: '8%', opacity: 0.6 }} />
-      <PressedDaisy className="pointer-events-none absolute" style={{ bottom: '12%', right: '10%', opacity: 0.6, transform: 'rotate(-18deg) scale(0.75)' }} />
+      <Balloon className="pointer-events-none absolute" style={{ top: '6%', right: '8%', opacity: 0.7, transform: 'rotate(12deg)' }} />
+      <StarScatter className="pointer-events-none absolute hidden sm:block" style={{ bottom: '22%', left: '8%', opacity: 0.6 }} />
+      <Cake className="pointer-events-none absolute" style={{ bottom: '10%', right: '8%', opacity: 0.7, transform: 'rotate(-6deg)' }} />
 
       <motion.svg
         viewBox="0 0 60 54" width="48" height="44"

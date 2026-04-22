@@ -1,4 +1,4 @@
-import { useMemo, useState } from 'react'
+import { useEffect, useMemo, useState } from 'react'
 import Shell from './components/Shell.jsx'
 import PreReveal from './components/PreReveal.jsx'
 import Reveal from './components/Reveal.jsx'
@@ -11,6 +11,7 @@ import MusicToggle from './components/MusicToggle.jsx'
 import { useMeta } from './lib/meta.js'
 import { zonedDateToUTC } from './lib/time.js'
 import { previewMode, skipIntro } from './lib/flags.js'
+import * as audio from './lib/audio.js'
 
 const STAGE = { GATE: 'gate', REVEAL: 'reveal', SITE: 'site' }
 
@@ -22,6 +23,18 @@ export default function App() {
     if (!meta) return null
     return zonedDateToUTC(meta.her.birthdate, meta.her.timezone)
   }, [meta])
+
+  // Once the day arrives, every refresh skips the countdown and goes straight
+  // to the reveal. Preview mode is exempt so Tiger can still test the gate.
+  useEffect(() => {
+    if (!meta || !targetUTC) return
+    if (stage !== STAGE.GATE) return
+    if (previewMode()) return
+    if (Date.now() >= targetUTC) {
+      setStage(STAGE.REVEAL)
+      audio.play()
+    }
+  }, [meta, targetUTC, stage])
 
   if (error) {
     return (

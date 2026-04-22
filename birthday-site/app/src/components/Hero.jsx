@@ -1,7 +1,7 @@
 import { motion, useScroll, useTransform } from 'framer-motion'
 import { ChevronDown } from 'lucide-react'
 import { firstName } from '../lib/meta.js'
-import { LavenderSprig, PressedDaisy, StarScatter, Heart } from './Sprigs.jsx'
+import { LavenderSprig, PressedDaisy, StarScatter, Heart, Balloon, Cake } from './Sprigs.jsx'
 
 const ease = [0.16, 1, 0.3, 1]
 
@@ -21,11 +21,11 @@ export default function Hero({ meta }) {
 
       {/* scatter */}
       <LavenderSprig className="pointer-events-none absolute hidden md:block" style={{ top: '6%', left: '3%', transform: 'rotate(-14deg)', opacity: 0.8 }} />
-      <PressedDaisy className="pointer-events-none absolute hidden sm:block" style={{ top: '8%', right: '6%', transform: 'rotate(14deg) scale(0.85)', opacity: 0.8 }} />
+      <Balloon className="pointer-events-none absolute hidden sm:block" style={{ top: '4%', right: '6%', transform: 'rotate(12deg)', opacity: 0.75 }} />
       <StarScatter className="pointer-events-none absolute" style={{ top: '46%', left: '3%', opacity: 0.7 }} />
       <Heart className="pointer-events-none absolute" style={{ bottom: '22%', right: '5%', transform: 'rotate(-10deg)', opacity: 0.7 }} />
-      <PressedDaisy className="pointer-events-none absolute" style={{ bottom: '8%', left: '8%', transform: 'rotate(-22deg) scale(0.7)', opacity: 0.7 }} />
-      <LavenderSprig className="pointer-events-none absolute hidden lg:block" style={{ bottom: '4%', right: '4%', transform: 'rotate(10deg) scale(0.75)', opacity: 0.55 }} />
+      <Cake className="pointer-events-none absolute hidden md:block" style={{ bottom: '6%', left: '5%', transform: 'rotate(-6deg)', opacity: 0.7 }} />
+      <PressedDaisy className="pointer-events-none absolute hidden lg:block" style={{ bottom: '4%', right: '4%', transform: 'rotate(10deg) scale(0.75)', opacity: 0.55 }} />
 
       {/* vertical date stamp */}
       <motion.div
@@ -36,7 +36,7 @@ export default function Hero({ meta }) {
         aria-hidden
       >
         <p className="font-body text-micro uppercase tracking-[0.5em] text-ash" style={{ writingMode: 'vertical-rl', transform: 'rotate(180deg)' }}>
-          04 · 23 · 2026
+          04 · 24 · 2026
         </p>
       </motion.div>
 
@@ -129,7 +129,7 @@ export default function Hero({ meta }) {
               className="absolute -right-3 -top-3 flex size-10 items-center justify-center rounded-full bg-mulberry font-body text-[0.5rem] uppercase tracking-[0.18em] text-parchment"
               style={{ transform: 'rotate(12deg)', boxShadow: '0 2px 4px rgba(0,0,0,0.12)' }}
             >
-              04·23
+              04·24
             </span>
             <img
               src="/assets/celebrant/tomiwa-02.JPG"

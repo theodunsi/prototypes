@@ -3,6 +3,7 @@ import { motion } from 'framer-motion'
 import {
   LavenderSprig, PressedDaisy, Heart, StarScatter, Butterfly,
   Handbag, Heels, Lipstick, PerfumeBottle, Crown, Bow, DiamondRing,
+  Cake, Balloon, PartyPopper, GiftBox,
 } from './Sprigs.jsx'
 
 const ease = [0.16, 1, 0.3, 1]
@@ -10,7 +11,7 @@ const ease = [0.16, 1, 0.3, 1]
 const FRIENDS = [
   'bella', 'motun', 'chiedu', 'nuella', 'ada',
   'nanya', 'ona', 'dinma', 'ebube', 'seyi',
-  'bola', 'toni', 'winner',
+  'bola', 'toni', 'winner', 'maryam', 'ore',
 ]
 
 // Tints & tilts per card — no two cards overlap because they live in a
@@ -29,6 +30,9 @@ const META = [
   { tint: '#FAF4E7', rotate: 4 },
   { tint: '#F3E4EC', rotate: -2 },
   { tint: '#F6EDD6', rotate: 3 },
+  { tint: '#EFE3EC', rotate: -3 },
+  { tint: '#F5E7DF', rotate: 4 },
+  { tint: '#F3E4EC', rotate: -4 },
 ]
 
 function displayName(slug) {
@@ -110,22 +114,23 @@ export default function FriendNotes() {
       className="relative w-full overflow-hidden px-4 py-28 sm:px-8 sm:py-36"
       style={{ background: 'linear-gradient(180deg, #EFE0D5 0%, #E8D9E0 100%)' }}
     >
-      {/* Girlie ornaments scattered across the whole page, not just at the edges */}
+      {/* Girlie + birthday ornaments scattered across the whole page */}
       <LavenderSprig className="pointer-events-none absolute hidden md:block" style={{ top: '5%', left: '3%', opacity: 0.7, transform: 'rotate(-14deg)' }} />
-      <Crown       className="pointer-events-none absolute" style={{ top: '4%', left: '44%', opacity: 0.55, transform: 'rotate(-4deg)' }} />
-      <Heels       className="pointer-events-none absolute hidden sm:block" style={{ top: '8%', right: '4%', opacity: 0.55, transform: 'rotate(8deg)' }} />
-      <PerfumeBottle className="pointer-events-none absolute" style={{ top: '18%', left: '40%', opacity: 0.5, transform: 'rotate(-10deg)' }} />
+      <Cake        className="pointer-events-none absolute" style={{ top: '4%', left: '44%', opacity: 0.65, transform: 'rotate(-4deg)' }} />
+      <Balloon     className="pointer-events-none absolute hidden sm:block" style={{ top: '6%', right: '4%', opacity: 0.65, transform: 'rotate(8deg)' }} />
+      <PartyPopper className="pointer-events-none absolute" style={{ top: '18%', left: '40%', opacity: 0.6, transform: 'rotate(-10deg)' }} />
       <Lipstick    className="pointer-events-none absolute" style={{ top: '24%', right: '38%', opacity: 0.55, transform: 'rotate(12deg)' }} />
       <Butterfly   className="pointer-events-none absolute hidden sm:block" style={{ top: '30%', left: '48%', opacity: 0.5 }} />
       <Heart       className="pointer-events-none absolute" style={{ top: '36%', left: '4%', opacity: 0.55, transform: 'rotate(-10deg)' }} />
-      <Handbag     className="pointer-events-none absolute" style={{ top: '42%', right: '42%', opacity: 0.5, transform: 'rotate(6deg)' }} />
+      <GiftBox     className="pointer-events-none absolute" style={{ top: '42%', right: '42%', opacity: 0.6, transform: 'rotate(6deg)' }} />
       <StarScatter className="pointer-events-none absolute" style={{ top: '48%', right: '3%', opacity: 0.6 }} />
       <Bow         className="pointer-events-none absolute" style={{ top: '58%', left: '44%', opacity: 0.55, transform: 'rotate(-8deg)' }} />
       <DiamondRing className="pointer-events-none absolute" style={{ top: '64%', right: '44%', opacity: 0.55, transform: 'rotate(4deg)' }} />
-      <PressedDaisy className="pointer-events-none absolute" style={{ top: '72%', left: '5%', opacity: 0.6, transform: 'rotate(-18deg) scale(0.85)' }} />
-      <Heels       className="pointer-events-none absolute hidden md:block" style={{ top: '80%', left: '46%', opacity: 0.5, transform: 'rotate(-14deg)' }} />
+      <Balloon     className="pointer-events-none absolute hidden md:block" body="#B87A6E" style={{ top: '66%', left: '2%', opacity: 0.6, transform: 'rotate(-8deg)' }} />
+      <PressedDaisy className="pointer-events-none absolute" style={{ top: '72%', left: '40%', opacity: 0.6, transform: 'rotate(-18deg) scale(0.85)' }} />
+      <PartyPopper className="pointer-events-none absolute hidden md:block" style={{ top: '80%', left: '46%', opacity: 0.55, transform: 'rotate(-14deg) scale(0.9)' }} />
       <LavenderSprig className="pointer-events-none absolute hidden md:block" style={{ top: '84%', right: '3%', opacity: 0.55, transform: 'rotate(10deg) scale(0.75)' }} />
-      <PerfumeBottle className="pointer-events-none absolute hidden sm:block" style={{ bottom: '6%', left: '42%', opacity: 0.5, transform: 'rotate(8deg) scale(0.8)' }} />
+      <Cake        className="pointer-events-none absolute hidden sm:block" base="#B87A6E" mid="#C89B3C" style={{ bottom: '6%', left: '42%', opacity: 0.55, transform: 'rotate(8deg) scale(0.85)' }} />
       <Crown       className="pointer-events-none absolute" style={{ bottom: '3%', right: '8%', opacity: 0.55, transform: 'rotate(10deg) scale(0.8)' }} />
 
       <motion.header

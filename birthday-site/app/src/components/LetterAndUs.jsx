@@ -2,7 +2,7 @@ import { useEffect, useRef, useState } from 'react'
 import { motion, useScroll, useTransform } from 'framer-motion'
 import {
   LavenderSprig, PressedDaisy, Heart, StarScatter, Butterfly,
-  Bow, DiamondRing,
+  Bow, DiamondRing, Cake, Balloon, GiftBox, Candle,
 } from './Sprigs.jsx'
 
 const ease = [0.16, 1, 0.3, 1]
@@ -150,16 +150,16 @@ export default function LetterAndUs({ meta }) {
           />
 
           {/* Ornaments — palette-recolored for dark */}
-          <LavenderSprig stroke="#CBB4D4" bloom="#EFE3EC"
-            className="pointer-events-none absolute z-[2]" style={{ top: '4%', left: '32%', opacity: 0.55, transform: 'rotate(-10deg)' }} />
-          <PressedDaisy petal="#FAF4E7" edge="#CBB4D4" center="#C89B3C"
-            className="pointer-events-none absolute z-[2]" style={{ top: '6%', right: '30%', opacity: 0.55, transform: 'rotate(14deg) scale(0.85)' }} />
+          <Cake base="#6B3B5E" mid="#B87A6E" top="#CBB4D4" candle="#C89B3C" flame="#B87A6E"
+            className="pointer-events-none absolute z-[2]" style={{ top: '4%', left: '32%', opacity: 0.55, transform: 'rotate(-6deg)' }} />
+          <Balloon body="#CBB4D4" highlight="#F3EADA"
+            className="pointer-events-none absolute z-[2]" style={{ top: '6%', right: '30%', opacity: 0.55, transform: 'rotate(12deg)' }} />
           <StarScatter fill="#C89B3C"
             className="pointer-events-none absolute z-[2]" style={{ top: '42%', left: '28%', opacity: 0.55 }} />
-          <Butterfly wing="#CBB4D4" edge="#6B3B5E" body="#CBB4D4"
-            className="pointer-events-none absolute z-[2]" style={{ top: '46%', right: '28%', opacity: 0.5 }} />
-          <Heart stroke="#CBB4D4" stitch="#C89B3C"
-            className="pointer-events-none absolute z-[2]" style={{ bottom: '10%', left: '30%', opacity: 0.45, transform: 'rotate(-6deg)' }} />
+          <Candle wax="#CBB4D4" wick="#3B2A52" flame="#C89B3C"
+            className="pointer-events-none absolute z-[2]" style={{ top: '44%', right: '28%', opacity: 0.55 }} />
+          <GiftBox box="#3B2A52" ribbon="#C89B3C" accent="#CBB4D4"
+            className="pointer-events-none absolute z-[2]" style={{ bottom: '10%', left: '30%', opacity: 0.5 }} />
           <DiamondRing band="#C89B3C" stone="#CBB4D4"
             className="pointer-events-none absolute z-[2]" style={{ bottom: '8%', right: '28%', opacity: 0.5 }} />
           <Bow fill="#B87A6E" stroke="#CBB4D4"

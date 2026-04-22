@@ -1,7 +1,7 @@
 import { motion } from 'framer-motion'
 import {
   LavenderSprig, PressedDaisy, StarScatter, Heart, Butterfly,
-  Bow, Handbag, Lipstick, Crown,
+  Bow, Lipstick, Crown, Cake, Balloon, GiftBox, PartyPopper,
 } from './Sprigs.jsx'
 
 const ease = [0.16, 1, 0.3, 1]
@@ -82,18 +82,19 @@ export default function ChildhoodGallery() {
       className="relative w-full overflow-hidden px-4 py-28 sm:px-8 sm:py-36"
       style={{ background: 'linear-gradient(180deg, #F3EADA 0%, #EFE0D5 100%)' }}
     >
-      {/* Ornaments scattered all over the page, not just at the edges */}
+      {/* Ornaments scattered all over — mixing botanicals, girlie things and birthday motifs */}
       <PressedDaisy className="pointer-events-none absolute" style={{ top: '6%', left: '5%', opacity: 0.7, transform: 'rotate(-18deg)' }} />
-      <Crown       className="pointer-events-none absolute hidden sm:block" style={{ top: '4%', left: '48%', opacity: 0.6, transform: 'rotate(-6deg)' }} />
+      <Balloon     className="pointer-events-none absolute hidden sm:block" style={{ top: '2%', left: '48%', opacity: 0.7, transform: 'rotate(-6deg)' }} />
       <LavenderSprig className="pointer-events-none absolute hidden md:block" style={{ top: '10%', right: '4%', opacity: 0.75, transform: 'rotate(12deg)' }} />
       <Bow         className="pointer-events-none absolute" style={{ top: '22%', left: '42%', opacity: 0.6, transform: 'rotate(6deg)' }} />
       <StarScatter className="pointer-events-none absolute" style={{ top: '32%', left: '3%', opacity: 0.6 }} />
-      <Butterfly   className="pointer-events-none absolute hidden sm:block" style={{ top: '36%', right: '7%', opacity: 0.6 }} />
-      <Handbag     className="pointer-events-none absolute" style={{ top: '50%', left: '46%', opacity: 0.55, transform: 'rotate(-8deg)' }} />
+      <PartyPopper className="pointer-events-none absolute hidden sm:block" style={{ top: '34%', right: '6%', opacity: 0.6, transform: 'rotate(8deg)' }} />
+      <Cake        className="pointer-events-none absolute" style={{ top: '48%', left: '46%', opacity: 0.65, transform: 'rotate(-4deg)' }} />
       <Heart       className="pointer-events-none absolute" style={{ top: '62%', left: '4%', opacity: 0.6, transform: 'rotate(-10deg)' }} />
       <Lipstick    className="pointer-events-none absolute" style={{ top: '70%', right: '46%', opacity: 0.6, transform: 'rotate(14deg)' }} />
-      <PressedDaisy className="pointer-events-none absolute hidden sm:block" style={{ top: '78%', right: '5%', opacity: 0.6, transform: 'rotate(20deg) scale(0.85)' }} />
-      <StarScatter className="pointer-events-none absolute" style={{ bottom: '10%', left: '38%', opacity: 0.55 }} />
+      <Balloon     body="#B87A6E" className="pointer-events-none absolute hidden md:block" style={{ top: '72%', right: '2%', opacity: 0.65, transform: 'rotate(10deg)' }} />
+      <GiftBox     className="pointer-events-none absolute" style={{ bottom: '18%', left: '44%', opacity: 0.6, transform: 'rotate(-8deg)' }} />
+      <Crown       className="pointer-events-none absolute" style={{ bottom: '10%', left: '4%', opacity: 0.6, transform: 'rotate(-8deg)' }} />
       <Heart       className="pointer-events-none absolute" style={{ bottom: '6%', right: '10%', opacity: 0.55, transform: 'rotate(10deg) scale(0.8)' }} />
 
       <motion.header

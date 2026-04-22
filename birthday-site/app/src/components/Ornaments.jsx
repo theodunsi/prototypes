@@ -273,7 +273,7 @@ export default function Ornaments() {
       <TapeStrip
         className="absolute hidden sm:block"
         style={{ bottom: '4%', left: '42%', transform: 'rotate(3deg)' }}
-        label="04·23·26"
+        label="04·24·26"
       />
 
       {/* Three little polaroids of her — peeking like photos pinned to the page */}
