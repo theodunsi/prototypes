@@ -28,10 +28,11 @@ const RIGHT_RAIL = [
 const TILTS_L = [-4, 3, -3, 5, -2, 4]
 const TILTS_R = [5, -3, 4, -4, 3, -5]
 
-function RailPhoto({ src, tilt }) {
+function RailPhoto({ src, tilt, align }) {
+  const alignClass = align === 'left' ? 'mr-auto' : 'ml-auto'
   return (
     <div
-      className="relative mx-auto mb-14"
+      className={`relative mb-14 w-fit ${alignClass}`}
       style={{ transform: `rotate(${tilt}deg)` }}
     >
       <div
@@ -42,13 +43,15 @@ function RailPhoto({ src, tilt }) {
           boxShadow: '0 4px 8px rgba(0,0,0,0.35), 0 40px 80px -28px rgba(0,0,0,0.7)',
         }}
       >
+        {/* brown clip/tape at top — same treatment used across cards site-wide */}
         <span
           aria-hidden className="absolute -top-3 left-1/2"
           style={{
-            width: 72, height: 16,
-            background: 'rgba(200, 155, 60, 0.42)',
-            border: '1px dashed rgba(203, 180, 212, 0.5)',
+            width: 64, height: 18,
+            background: 'rgba(82, 54, 38, 0.72)',
+            border: '1px solid rgba(46, 28, 18, 0.55)',
             transform: 'translateX(-50%) rotate(-5deg)',
+            boxShadow: '0 2px 4px rgba(0,0,0,0.25)',
           }}
         />
         <img
@@ -88,30 +91,30 @@ function LetterContent({ meta, compact = false }) {
 
   return (
     <div className="text-parchment">
-      <p className={`font-body uppercase tracking-[0.32em] text-bloom/70 ${compact ? 'text-[0.58rem]' : 'text-micro'}`}>
+      <p className={`font-body uppercase tracking-[0.32em] text-bloom/70 ${compact ? 'text-[0.76rem]' : 'text-micro'}`}>
         a letter from me, to you
       </p>
       {greeting && (
         <h2
           className="mt-4 font-display italic font-light leading-[1.15] text-parchment"
-          style={{ fontSize: compact ? 'clamp(1rem, 2.2vw, 1.35rem)' : 'clamp(1.75rem, 4.2vw, 2.75rem)' }}
+          style={{ fontSize: compact ? 'clamp(1.25rem, 2.8vw, 1.65rem)' : 'clamp(1.75rem, 4.2vw, 2.75rem)' }}
         >
           {greeting}
         </h2>
       )}
       <div
-        className={`${compact ? 'mt-4 space-y-2.5' : 'mt-10 space-y-7'} font-body text-parchment/88`}
+        className={`${compact ? 'mt-4 space-y-3' : 'mt-10 space-y-7'} font-body text-parchment/88`}
         style={compact
-          ? { fontSize: '0.78rem', lineHeight: '1.5' }
+          ? { fontSize: '0.97rem', lineHeight: '1.55' }
           : { fontSize: '1.125rem', lineHeight: '1.9' }}
       >
         {renderBlocks(rest)}
       </div>
       <div className={compact ? 'mt-5' : 'mt-16'}>
-        <p className={`font-body italic text-parchment/60 ${compact ? 'text-[0.72rem]' : 'text-letter'}`}>
+        <p className={`font-body italic text-parchment/60 ${compact ? 'text-[0.9rem]' : 'text-letter'}`}>
           with my whole heart,
         </p>
-        <p className={`font-hand text-bloom ${compact ? 'text-xl' : 'text-3xl sm:text-4xl'}`}>
+        <p className={`font-hand text-bloom ${compact ? 'text-2xl' : 'text-3xl sm:text-4xl'}`}>
           — {meta.from.nickname || meta.from.name.split(' ')[0]}
         </p>
       </div>
@@ -168,7 +171,7 @@ export default function LetterAndUs({ meta }) {
             className="absolute left-0 top-0 z-[3] w-[340px] lg:w-[380px] xl:w-[400px]"
           >
             {LEFT_RAIL.map((src, i) => (
-              <RailPhoto key={src} src={src} tilt={TILTS_L[i % TILTS_L.length]} />
+              <RailPhoto key={src} src={src} tilt={TILTS_L[i % TILTS_L.length]} align="left" />
             ))}
           </motion.div>
 
@@ -178,7 +181,7 @@ export default function LetterAndUs({ meta }) {
             className="absolute right-0 top-0 z-[3] w-[340px] lg:w-[380px] xl:w-[400px]"
           >
             {RIGHT_RAIL.map((src, i) => (
-              <RailPhoto key={src} src={src} tilt={TILTS_R[i % TILTS_R.length]} />
+              <RailPhoto key={src} src={src} tilt={TILTS_R[i % TILTS_R.length]} align="right" />
             ))}
           </motion.div>
 
