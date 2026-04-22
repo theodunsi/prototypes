@@ -14,7 +14,7 @@ const REVEAL_PHOTOS = [
     dur: 14, delay: 1.1,
   },
   {
-    src: '/assets/celebrant/tomiwa-02.JPG',
+    src: '/assets/celebrant/9ed59943-040c-4d43-b0a6-feb00487acb4.JPG',
     pos: { top: '4%', right: '5%' },
     fromX: 120, fromY: -90, fromR: 32, toR: 10,
     dur: 16, delay: 1.25,

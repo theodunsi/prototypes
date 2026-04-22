@@ -2,7 +2,10 @@ import { useMemo, useState } from 'react'
 import Shell from './components/Shell.jsx'
 import PreReveal from './components/PreReveal.jsx'
 import Reveal from './components/Reveal.jsx'
-import { useMeta, firstName } from './lib/meta.js'
+import Hero from './components/Hero.jsx'
+import Letter from './components/Letter.jsx'
+import MusicToggle from './components/MusicToggle.jsx'
+import { useMeta } from './lib/meta.js'
 import { zonedDateToUTC } from './lib/time.js'
 import { previewMode, skipIntro } from './lib/flags.js'
 
@@ -50,11 +53,16 @@ export default function App() {
       )}
 
       {stage === STAGE.SITE && (
-        <section className="mx-auto flex min-h-dvh max-w-letter flex-col items-center justify-center gap-6 px-6 text-center">
-          <p className="font-body text-micro uppercase text-ash">opened</p>
-          <h1 className="font-display text-5xl text-iris">happy birthday, {firstName(meta.her.name)}</h1>
-          <p className="font-body text-quiet italic text-ash">(hero, letter, photos and friend notes land in the next passes)</p>
-        </section>
+        <>
+          <Hero meta={meta} />
+          <Letter meta={meta} />
+          <section className="flex min-h-[40vh] items-center justify-center px-6 py-32 text-center">
+            <p className="font-body text-quiet italic text-ash">
+              (through the years, the two of us, friend notes and closing — next passes)
+            </p>
+          </section>
+          <MusicToggle />
+        </>
       )}
     </Shell>
   )

@@ -293,7 +293,7 @@ export default function Ornaments() {
         style={{ top: '46%', left: '17%', transform: 'rotate(-7deg)' }}
       >
         <MiniPolaroid
-          src="/assets/celebrant/tomiwa-02.JPG"
+          src="/assets/celebrant/9ed59943-040c-4d43-b0a6-feb00487acb4.JPG"
           alt="Tomiwa"
           caption="her"
           dur={17}
