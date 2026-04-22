@@ -48,7 +48,7 @@ export default function PreReveal({ meta, targetUTC, forceReady = false, onUnloc
     if (r) setBurst({ x: r.left + r.width / 2, y: r.top + r.height / 2 })
 
     // Hold the moment so she sees the celebration before the page changes.
-    setTimeout(() => onUnlock(), 1300)
+    setTimeout(() => onUnlock(), 1900)
   }
 
   return (

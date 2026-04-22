@@ -59,20 +59,31 @@ function ShapeDaisy({ color }) {
 
 const SHAPES = [ShapeHeart, ShapePetal, ShapeStar, ShapeDot, ShapeDaisy]
 
-function buildParticles(n) {
+function buildParticles(n, originY) {
+  const vh = typeof window !== 'undefined' ? window.innerHeight : 800
+  const vw = typeof window !== 'undefined' ? window.innerWidth : 800
+  // Reach: enough that upward-flying particles graze the top of the viewport.
+  const upReach = Math.max(originY - 24, 320)            // px upward room
+  const sideReach = Math.min(vw * 0.48, 540)             // px sideways room
   const arr = []
   for (let i = 0; i < n; i++) {
-    const angle = (Math.PI * 2 * i) / n + (Math.random() - 0.5) * 0.55
-    const distance = 90 + Math.random() * 130
+    const angle = (Math.PI * 2 * i) / n + (Math.random() - 0.5) * 0.5
     const Shape = SHAPES[Math.floor(Math.random() * SHAPES.length)]
+    const cos = Math.cos(angle)
+    const sin = Math.sin(angle)
+    // Scale each particle independently for X and Y so the burst fills the
+    // page properly (taller than it is wide, since the button sits low).
+    const distY = upReach * (0.55 + Math.random() * 0.45)
+    const distX = sideReach * (0.45 + Math.random() * 0.55)
     arr.push({
       id: i,
       Shape,
       color: COLORS[Math.floor(Math.random() * COLORS.length)],
-      endX: Math.cos(angle) * distance,
-      endY: Math.sin(angle) * distance + 60,  // gravity-tilt downward
-      spin: (Math.random() - 0.5) * 540,
-      delay: Math.random() * 0.08,
+      endX: cos * distX,
+      // Gravity adds positive y; reduce it so upward particles still fly high
+      endY: sin * distY + Math.max(60, vh * 0.08),
+      spin: (Math.random() - 0.5) * 720,
+      delay: Math.random() * 0.05,
     })
   }
   return arr
@@ -83,10 +94,13 @@ export default function Confetti({ originX, originY, onDone }) {
     typeof window !== 'undefined' &&
     window.matchMedia('(prefers-reduced-motion: reduce)').matches
 
-  const particles = useMemo(() => buildParticles(reduce ? 0 : 32), [reduce])
+  const particles = useMemo(
+    () => buildParticles(reduce ? 0 : 56, originY),
+    [reduce, originY],
+  )
 
   useEffect(() => {
-    const t = setTimeout(onDone, reduce ? 200 : 1500)
+    const t = setTimeout(onDone, reduce ? 200 : 2000)
     return () => clearTimeout(t)
   }, [onDone, reduce])
 
@@ -114,10 +128,10 @@ export default function Confetti({ originX, originY, onDone }) {
               rotate: p.spin,
             }}
             transition={{
-              duration: 1.4,
+              duration: 1.9,
               delay: p.delay,
               ease: [0.16, 1, 0.3, 1],
-              opacity: { duration: 1.4, times: [0, 0.1, 0.7, 1] },
+              opacity: { duration: 1.9, times: [0, 0.08, 0.7, 1] },
             }}
           >
             <Shape color={p.color} />
