@@ -12,12 +12,23 @@ import { useMeta } from './lib/meta.js'
 import { zonedDateToUTC } from './lib/time.js'
 import { previewMode, skipIntro } from './lib/flags.js'
 import * as audio from './lib/audio.js'
+import Confetti from './components/Confetti.jsx'
 
 const STAGE = { GATE: 'gate', REVEAL: 'reveal', SITE: 'site' }
 
 export default function App() {
   const { meta, error } = useMeta()
   const [stage, setStage] = useState(() => (skipIntro() ? STAGE.SITE : STAGE.GATE))
+  const [burst, setBurst] = useState(false)
+
+  // Press handler: confetti fires from screen corners, audio kicks in,
+  // page advances to the reveal after a beat so the cannons are visible
+  // launching from the gate.
+  const handleUnlock = () => {
+    setBurst(true)
+    audio.play()
+    setTimeout(() => setStage(STAGE.REVEAL), 800)
+  }
 
   const targetUTC = useMemo(() => {
     if (!meta) return null
@@ -57,7 +68,7 @@ export default function App() {
           meta={meta}
           targetUTC={targetUTC}
           forceReady={previewMode()}
-          onUnlock={() => setStage(STAGE.REVEAL)}
+          onUnlock={handleUnlock}
         />
       )}
 
@@ -75,6 +86,10 @@ export default function App() {
           <MusicToggle />
         </>
       )}
+
+      {/* Confetti lives at the App level so it keeps playing through the
+          stage transition from gate → reveal */}
+      {burst && <Confetti onDone={() => setBurst(false)} />}
     </Shell>
   )
 }

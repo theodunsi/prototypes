@@ -4,9 +4,7 @@ import { Lock } from 'lucide-react'
 import { firstName } from '../lib/meta.js'
 import { pad } from '../lib/time.js'
 import { useCountdown } from '../hooks/useCountdown.js'
-import * as audio from '../lib/audio.js'
 import Ornaments from './Ornaments.jsx'
-import Confetti from './Confetti.jsx'
 
 const fade = {
   hidden: { opacity: 0, y: 8 },
@@ -34,22 +32,13 @@ export default function PreReveal({ meta, targetUTC, forceReady = false, onUnloc
   const her = firstName(meta.her.name)
 
   const buttonRef = useRef(null)
-  const [burst, setBurst] = useState(null)   // {x, y} | null
   const [pressed, setPressed] = useState(false)
 
+  // App handles audio + confetti + the stage transition; we just signal the press.
   const handleOpen = () => {
     if (pressed) return
     setPressed(true)
-
-    // Music begins on the press — first user gesture, so autoplay rules are happy.
-    audio.play()
-
-    // Burst from the button's center
-    const r = buttonRef.current?.getBoundingClientRect()
-    if (r) setBurst({ x: r.left + r.width / 2, y: r.top + r.height / 2 })
-
-    // Hold the moment so she sees the celebration before the page changes.
-    setTimeout(() => onUnlock(), 1900)
+    onUnlock()
   }
 
   return (
@@ -126,13 +115,6 @@ export default function PreReveal({ meta, targetUTC, forceReady = false, onUnloc
         </motion.div>
       </div>
 
-      {burst && (
-        <Confetti
-          originX={burst.x}
-          originY={burst.y}
-          onDone={() => setBurst(null)}
-        />
-      )}
     </section>
   )
 }
