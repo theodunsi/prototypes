@@ -131,6 +131,20 @@ export default function Hero({ meta }) {
             >
               04·24
             </span>
+            {/* Crown sitting on her head — extends above the polaroid frame */}
+            <svg
+              viewBox="0 0 80 50" width="86" height="54"
+              className="pointer-events-none absolute -top-7 left-1/2 z-20 -translate-x-1/2"
+              style={{ transform: 'translateX(-50%) rotate(-4deg)', filter: 'drop-shadow(0 4px 6px rgba(0,0,0,0.25))' }}
+              aria-hidden
+            >
+              <path d="M8 42 L 14 16 L 26 30 L 40 10 L 54 30 L 66 16 L 72 42 Z"
+                fill="#C89B3C" stroke="#3B2A52" strokeWidth="1.4" strokeLinejoin="round" />
+              <rect x="8" y="42" width="64" height="5" fill="#C89B3C" stroke="#3B2A52" strokeWidth="1.4" />
+              <circle cx="14" cy="16" r="2.8" fill="#CBB4D4" stroke="#3B2A52" strokeWidth="0.9" />
+              <circle cx="40" cy="10" r="3.4" fill="#B87A6E" stroke="#3B2A52" strokeWidth="0.9" />
+              <circle cx="66" cy="16" r="2.8" fill="#CBB4D4" stroke="#3B2A52" strokeWidth="0.9" />
+            </svg>
             <img
               src="/assets/celebrant/tomiwa-02.JPG"
               alt={`${her}, the love of my life`}
