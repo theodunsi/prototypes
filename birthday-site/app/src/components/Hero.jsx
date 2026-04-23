@@ -131,29 +131,19 @@ export default function Hero({ meta }) {
             >
               04·24
             </span>
-            {/* Party hat perched on her head */}
+            {/* Crown sitting on her head */}
             <svg
-              viewBox="0 0 80 100" width="74" height="92"
+              viewBox="0 0 80 50" width="86" height="54"
               className="pointer-events-none absolute left-1/2 z-20 -translate-x-1/2"
-              style={{ top: 182, transform: 'translateX(calc(-50% + 44px)) rotate(24deg)', filter: 'drop-shadow(0 4px 6px rgba(0,0,0,0.25))' }}
+              style={{ top: 182, transform: 'translateX(calc(-50% + 44px)) rotate(20deg)', filter: 'drop-shadow(0 4px 6px rgba(0,0,0,0.25))' }}
               aria-hidden
             >
-              {/* pom-pom */}
-              <circle cx="40" cy="8" r="7" fill="#C89B3C" stroke="#3B2A52" strokeWidth="1.1" />
-              <circle cx="37" cy="6" r="2" fill="#FAF4E7" opacity="0.55" />
-              {/* cone */}
-              <path d="M40 14 L 14 88 L 66 88 Z" fill="#6B3B5E" stroke="#3B2A52" strokeWidth="1.4" strokeLinejoin="round" />
-              {/* decorative dots */}
-              <circle cx="32" cy="38" r="2.6" fill="#CBB4D4" />
-              <circle cx="49" cy="44" r="2.2" fill="#C89B3C" />
-              <circle cx="28" cy="58" r="2.4" fill="#B87A6E" />
-              <circle cx="50" cy="64" r="2.2" fill="#CBB4D4" />
-              <circle cx="40" cy="52" r="2.4" fill="#C89B3C" />
-              <circle cx="36" cy="74" r="2.2" fill="#B87A6E" />
-              <circle cx="48" cy="78" r="2" fill="#CBB4D4" />
-              {/* base band */}
-              <ellipse cx="40" cy="88" rx="26" ry="4.5" fill="#3B2A52" />
-              <ellipse cx="40" cy="87" rx="22" ry="3" fill="#C89B3C" opacity="0.85" />
+              <path d="M8 42 L 14 16 L 26 30 L 40 10 L 54 30 L 66 16 L 72 42 Z"
+                fill="#C89B3C" stroke="#3B2A52" strokeWidth="1.4" strokeLinejoin="round" />
+              <rect x="8" y="42" width="64" height="5" fill="#C89B3C" stroke="#3B2A52" strokeWidth="1.4" />
+              <circle cx="14" cy="16" r="2.8" fill="#CBB4D4" stroke="#3B2A52" strokeWidth="0.9" />
+              <circle cx="40" cy="10" r="3.4" fill="#B87A6E" stroke="#3B2A52" strokeWidth="0.9" />
+              <circle cx="66" cy="16" r="2.8" fill="#CBB4D4" stroke="#3B2A52" strokeWidth="0.9" />
             </svg>
             <img
               src="/assets/celebrant/tomiwa-02.JPG"
