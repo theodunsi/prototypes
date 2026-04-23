@@ -99,8 +99,7 @@ function Card({ slug, meta }) {
         >
           {renderBlocks(content)}
         </div>
-        <div className="mt-4 flex items-center gap-2">
-          <span className="h-px flex-1 bg-mulberry/25" aria-hidden />
+        <div className="mt-4 text-right">
           <span className="font-hand text-lg text-mulberry">— {displayName(slug)}</span>
         </div>
       </div>
