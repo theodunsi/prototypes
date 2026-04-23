@@ -135,7 +135,7 @@ export default function Hero({ meta }) {
             <svg
               viewBox="0 0 80 50" width="86" height="54"
               className="pointer-events-none absolute left-1/2 z-20 -translate-x-1/2"
-              style={{ top: 172, transform: 'translateX(calc(-50% + 12px)) rotate(14deg)', filter: 'drop-shadow(0 4px 6px rgba(0,0,0,0.25))' }}
+              style={{ top: 172, transform: 'translateX(calc(-50% + 32px)) rotate(14deg)', filter: 'drop-shadow(0 4px 6px rgba(0,0,0,0.25))' }}
               aria-hidden
             >
               <path d="M8 42 L 14 16 L 26 30 L 40 10 L 54 30 L 66 16 L 72 42 Z"
