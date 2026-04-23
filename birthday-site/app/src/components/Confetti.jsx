@@ -1,9 +1,9 @@
 import { useEffect, useMemo } from 'react'
 import { motion } from 'framer-motion'
 
-// Two corner cannons. Each fires palette-true particles diagonally up and
-// inward, peaking near the top of the viewport, then falling back down with
-// gravity. Shapes are pulled from the same vocabulary as the page ornaments.
+// Two corner cannons. Each particle shoots out in a single smooth ease-out
+// arc (no fall-back, no keyframes mid-flight) and fades as it reaches its
+// peak distance. Reads as a real confetti pop, not a triangle wave.
 
 const COLORS = ['#6B3B5E', '#CBB4D4', '#B87A6E', '#C89B3C', '#3B2A52']
 
@@ -51,38 +51,25 @@ function ShapeDaisy({ color }) {
 
 const SHAPES = [ShapeHeart, ShapePetal, ShapeStar, ShapeDot, ShapeDaisy]
 
-// Build a side's worth of particles. Each particle has an arc (apex near the
-// top of the viewport) and lands somewhere below the start point.
 function buildSide(side, count) {
   const vh = typeof window !== 'undefined' ? window.innerHeight : 800
   const arr = []
   for (let i = 0; i < count; i++) {
     const sideMul = side === 'left' ? 1 : -1
-    // 28–86° from horizontal — wide spread from low-flat shots to steep verticals
-    const angleDeg = 28 + Math.random() * 58
+    // 30°–85° from horizontal — wide spread, mostly upward
+    const angleDeg = 30 + Math.random() * 55
     const angleRad = (angleDeg * Math.PI) / 180
-    // Speed scaled to viewport height — wider variation so the fan is uneven
-    const speed = vh * (0.85 + Math.random() * 0.85)
-    const vx = sideMul * Math.cos(angleRad) * speed
-    const vy = -Math.sin(angleRad) * speed     // negative = up in CSS
-    // Apex point (around 50% of duration)
-    const apexX = vx * 0.55
-    const apexY = vy * 0.6
-    // Final landing — past the start, well below it
-    const finalX = vx * 1.1
-    const finalY = vh * 0.4 + Math.random() * vh * 0.45
-    // Mid-fall point so the curve actually arcs (not a triangle)
-    const midX = (apexX + finalX) * 0.5
-    const midY = apexY * 0.25
+    // Distance scaled to viewport — peaks vary so the burst feels uneven
+    const distance = vh * (0.7 + Math.random() * 0.65)
     arr.push({
       id: `${side}-${i}`,
       Shape: SHAPES[Math.floor(Math.random() * SHAPES.length)],
       color: COLORS[Math.floor(Math.random() * COLORS.length)],
-      x: [0, apexX * 0.35, apexX, midX, finalX],
-      y: [0, apexY * 0.7, apexY, midY, finalY],
-      spin: (Math.random() - 0.5) * 1080,
-      delay: Math.random() * 0.18,
-      duration: 2.6 + Math.random() * 1.1,
+      targetX: sideMul * Math.cos(angleRad) * distance,
+      targetY: -Math.sin(angleRad) * distance,   // upward only
+      spin: (Math.random() - 0.5) * 720,
+      delay: Math.random() * 0.12,
+      duration: 1.6 + Math.random() * 0.6,
     })
   }
   return arr
@@ -96,15 +83,44 @@ function Particle({ p }) {
       style={{ left: 0, top: 0 }}
       initial={{ x: 0, y: 0, opacity: 0, scale: 0.6, rotate: 0 }}
       animate={{
-        x: p.x, y: p.y, rotate: p.spin,
-        opacity: [0, 1, 1, 1, 0],
-        scale: [0.6, 1.05, 1, 1, 0.85],
+        x: p.targetX,
+        y: p.targetY,
+        rotate: p.spin,
+        opacity: [0, 1, 1, 0],
+        scale: [0.6, 1, 1, 0.85],
       }}
       transition={{
         duration: p.duration,
         delay: p.delay,
-        times: [0, 0.18, 0.5, 0.78, 1],
-        ease: 'linear',
+        ease: [0.22, 1, 0.36, 1],   // smooth ease-out — fast burst, decelerates
+        opacity: { duration: p.duration, delay: p.delay, times: [0, 0.12, 0.6, 1] },
+        scale:   { duration: p.duration, delay: p.delay, times: [0, 0.15, 0.6, 1] },
+      }}
+    />
+  )
+}
+
+// Render the shape inside a wrapper so framer transforms compose cleanly
+function ParticleWrap({ p }) {
+  const Shape = p.Shape
+  return (
+    <motion.div
+      className="absolute"
+      style={{ left: 0, top: 0 }}
+      initial={{ x: 0, y: 0, opacity: 0, scale: 0.6, rotate: 0 }}
+      animate={{
+        x: p.targetX,
+        y: p.targetY,
+        rotate: p.spin,
+        opacity: [0, 1, 1, 0],
+        scale: [0.6, 1, 1, 0.85],
+      }}
+      transition={{
+        duration: p.duration,
+        delay: p.delay,
+        ease: [0.22, 1, 0.36, 1],
+        opacity: { duration: p.duration, delay: p.delay, times: [0, 0.12, 0.65, 1] },
+        scale:   { duration: p.duration, delay: p.delay, times: [0, 0.15, 0.65, 1] },
       }}
     >
       <Shape color={p.color} />
@@ -117,11 +133,11 @@ export default function Confetti({ onDone }) {
     typeof window !== 'undefined' &&
     window.matchMedia('(prefers-reduced-motion: reduce)').matches
 
-  const left = useMemo(() => (reduce ? [] : buildSide('left', 42)), [reduce])
-  const right = useMemo(() => (reduce ? [] : buildSide('right', 42)), [reduce])
+  const left = useMemo(() => (reduce ? [] : buildSide('left', 36)), [reduce])
+  const right = useMemo(() => (reduce ? [] : buildSide('right', 36)), [reduce])
 
   useEffect(() => {
-    const t = setTimeout(onDone, reduce ? 200 : 3700)
+    const t = setTimeout(onDone, reduce ? 200 : 2400)
     return () => clearTimeout(t)
   }, [onDone, reduce])
 
@@ -130,10 +146,10 @@ export default function Confetti({ onDone }) {
   return (
     <div className="pointer-events-none fixed inset-0 z-control" aria-hidden>
       <div className="absolute" style={{ left: 16, bottom: 16 }}>
-        {left.map((p) => <Particle key={p.id} p={p} />)}
+        {left.map((p) => <ParticleWrap key={p.id} p={p} />)}
       </div>
       <div className="absolute" style={{ right: 16, bottom: 16 }}>
-        {right.map((p) => <Particle key={p.id} p={p} />)}
+        {right.map((p) => <ParticleWrap key={p.id} p={p} />)}
       </div>
     </div>
   )

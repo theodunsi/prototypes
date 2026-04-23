@@ -27,9 +27,8 @@ export default function App() {
   const handleUnlock = () => {
     setBurst(true)
     audio.play()
-    // Wait until the entire confetti animation has played out and particles
-    // have all fallen before advancing to the reveal.
-    setTimeout(() => setStage(STAGE.REVEAL), 4200)
+    // Confetti pops out and fades; wait for the burst to clear before advancing
+    setTimeout(() => setStage(STAGE.REVEAL), 2500)
   }
 
   const targetUTC = useMemo(() => {
