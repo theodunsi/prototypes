@@ -59,7 +59,7 @@ export default function PreReveal({ meta, targetUTC, forceReady = false, onUnloc
           variants={fade} initial="hidden" animate="show" custom={0}
           className="font-body text-micro uppercase text-ash"
         >
-          a small thing, made for one person
+          from tiger
         </motion.p>
 
         <motion.h1
