@@ -58,11 +58,11 @@ function buildSide(side, count) {
   const arr = []
   for (let i = 0; i < count; i++) {
     const sideMul = side === 'left' ? 1 : -1
-    // 50–82° from horizontal — steeply upward but inward
-    const angleDeg = 50 + Math.random() * 32
+    // 28–86° from horizontal — wide spread from low-flat shots to steep verticals
+    const angleDeg = 28 + Math.random() * 58
     const angleRad = (angleDeg * Math.PI) / 180
-    // Speed scaled to viewport height — peak reaches ~80–105% of vh
-    const speed = vh * (0.95 + Math.random() * 0.55)
+    // Speed scaled to viewport height — wider variation so the fan is uneven
+    const speed = vh * (0.85 + Math.random() * 0.85)
     const vx = sideMul * Math.cos(angleRad) * speed
     const vy = -Math.sin(angleRad) * speed     // negative = up in CSS
     // Apex point (around 50% of duration)
