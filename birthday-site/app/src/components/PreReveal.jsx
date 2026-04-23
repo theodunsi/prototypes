@@ -16,11 +16,12 @@ const fade = {
   }),
 }
 
-function Cell({ value, label }) {
+function Cell({ value, label, wide }) {
+  // Wide cell holds totalHours which can grow past 99
   return (
-    <div className="flex w-20 flex-col items-center gap-1.5 sm:w-24">
+    <div className={`flex flex-col items-center gap-1.5 ${wide ? 'w-24 sm:w-28' : 'w-20 sm:w-24'}`}>
       <span className="font-display text-5xl font-light tabular-nums text-iris sm:text-6xl">
-        {pad(value)}
+        {wide ? String(value).padStart(2, '0') : pad(value)}
       </span>
       <span className="font-body text-micro uppercase text-ash">{label}</span>
     </div>
@@ -85,9 +86,7 @@ export default function PreReveal({ meta, targetUTC, forceReady = false, onUnloc
           variants={fade} initial="hidden" animate="show" custom={2}
           className="flex items-center justify-center gap-3 sm:gap-5"
         >
-          <Cell value={live.days} label="days" />
-          <span className="font-display text-3xl text-bloom" aria-hidden>·</span>
-          <Cell value={live.hours} label="hours" />
+          <Cell value={live.totalHours} label="hours" wide />
           <span className="font-display text-3xl text-bloom" aria-hidden>·</span>
           <Cell value={live.minutes} label="min" />
           <span className="font-display text-3xl text-bloom" aria-hidden>·</span>

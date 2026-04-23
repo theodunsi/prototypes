@@ -31,9 +31,11 @@ export function diffParts(ms) {
   const total = Math.max(0, ms)
   const days = Math.floor(total / 86_400_000)
   const hours = Math.floor((total % 86_400_000) / 3_600_000)
+  // totalHours rolls days into hours so a day-less display still reads correctly
+  const totalHours = Math.floor(total / 3_600_000)
   const minutes = Math.floor((total % 3_600_000) / 60_000)
   const seconds = Math.floor((total % 60_000) / 1_000)
-  return { days, hours, minutes, seconds, total }
+  return { days, hours, totalHours, minutes, seconds, total }
 }
 
 export function pad(n) {
