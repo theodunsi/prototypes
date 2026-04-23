@@ -134,8 +134,8 @@ export default function Hero({ meta }) {
             {/* Crown sitting on her head — extends above the polaroid frame */}
             <svg
               viewBox="0 0 80 50" width="86" height="54"
-              className="pointer-events-none absolute -top-7 left-1/2 z-20 -translate-x-1/2"
-              style={{ transform: 'translateX(-50%) rotate(-4deg)', filter: 'drop-shadow(0 4px 6px rgba(0,0,0,0.25))' }}
+              className="pointer-events-none absolute left-1/2 z-20 -translate-x-1/2"
+              style={{ top: 172, transform: 'translateX(-50%) rotate(14deg)', filter: 'drop-shadow(0 4px 6px rgba(0,0,0,0.25))' }}
               aria-hidden
             >
               <path d="M8 42 L 14 16 L 26 30 L 40 10 L 54 30 L 66 16 L 72 42 Z"
