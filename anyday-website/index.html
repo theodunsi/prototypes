@@ -465,10 +465,15 @@ html, body {
     textEl.className = 'btn-text';
     textEl.textContent = original;
 
-    // Preserve any existing child elements (e.g. SVG icon in menu-btn)
-    const existingEls = [...btn.childNodes].filter(n => n.nodeType === Node.ELEMENT_NODE);
-    btn.innerHTML = '';
-    btn.append(fill, ...existingEls, textEl);
+    if (btn.classList.contains('menu-btn')) {
+      // Don't touch the SVG — just prepend the fill and swap the text node in place
+      const textNode = [...btn.childNodes].find(n => n.nodeType === Node.TEXT_NODE && n.textContent.trim());
+      btn.prepend(fill);
+      textNode.replaceWith(textEl);
+    } else {
+      btn.innerHTML = '';
+      btn.append(fill, textEl);
+    }
 
     let fillAnim = null;
     let rafId    = null;
