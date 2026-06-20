@@ -133,24 +133,26 @@ html, body {
   font-size: 14px; font-weight: 400; letter-spacing: -0.015em;
   text-transform: uppercase;
   cursor: pointer; text-decoration: none; white-space: nowrap;
-  transition: transform .15s ease, background-position .3s ease, color .2s;
-  background-size: 200% 100%;
-  background-position: right center;
+  transition: transform .15s ease, color .25s ease;
+  position: relative; overflow: hidden;
 }
 .btn:active { transform: translateY(1px); }
-.btn:hover  { background-position: left center; }
-.btn-primary {
-  background-image: linear-gradient(to right, #FFE7A3 50%, var(--white) 50%);
-  color: var(--black);
-  border: none;
-}
-/* Ghost: subtle white fill slides in */
-.btn-ghost {
-  background-image: linear-gradient(to right, rgba(255,255,255,0.14) 50%, transparent 50%);
-  color: var(--white);
-  border: none;
-}
+.btn-primary { background: var(--white); color: var(--black); border: none; }
+.btn-ghost   { background: transparent;  color: var(--white); border: none; }
 .btn-ghost:hover { color: rgba(255,255,255,0.7); }
+
+/* Sliding fill pill — driven entirely by JS */
+.btn-fill {
+  position: absolute; inset: 0;
+  border-radius: 999px;
+  transform: translateX(-110%);
+  pointer-events: none;
+  z-index: 0;
+}
+.btn-primary .btn-fill { background: #FFE7A3; }
+.btn-ghost   .btn-fill { background: rgba(255,255,255,0.14); }
+/* Text sits above the fill */
+.btn-text { position: relative; z-index: 1; }
 </style>
 </head>
 <body>
@@ -441,41 +443,74 @@ html, body {
 })();
 
 
-/* ---------- Button scramble — left→right reveal tracks the fill slide ---------- */
+/* ---------- Button: sliding fill + scramble ---------- */
 (function scrambleButtons() {
-  const DIGITS  = '0123456789';
-  const FILL_MS = 300;  // matches CSS background-position transition
-  const FPS     = 18;   // frames across the full sweep
+  const CHARS   = '0123456789!@#$%^&*{}[]|<>?/';
+  const FILL_MS = 480;
+  const FPS     = 24;
+  const EASE    = 'cubic-bezier(0.16, 1, 0.3, 1)';
 
   document.querySelectorAll('.btn').forEach(btn => {
-    const original = btn.textContent;
+    const original = btn.textContent.trim();
     const chars = [...original];
     const N = chars.length;
-    let timers = [];
 
-    function rand(c) { return c === ' ' ? ' ' : DIGITS[Math.floor(Math.random() * 10)]; }
+    // Build: fill pill + text node wrapper
+    const fill   = document.createElement('span');
+    fill.className = 'btn-fill';
+    const textEl = document.createElement('span');
+    textEl.className = 'btn-text';
+    textEl.textContent = original;
+    btn.innerHTML = '';
+    btn.append(fill, textEl);
+
+    let fillAnim = null;
+    let timers   = [];
+
+    function rand(c) {
+      return c === ' ' ? ' ' : CHARS[Math.floor(Math.random() * CHARS.length)];
+    }
 
     btn.addEventListener('mouseenter', () => {
+      // Lock width so surrounding elements don't shift
+      btn.style.width = btn.offsetWidth + 'px';
+
+      // Slide fill in from left
+      if (fillAnim) { fillAnim.cancel(); fill.style.transform = 'translateX(-110%)'; }
+      fillAnim = fill.animate(
+        [{ transform: 'translateX(-110%)' }, { transform: 'translateX(0%)' }],
+        { duration: FILL_MS, easing: EASE, fill: 'forwards' }
+      );
+
+      // Scramble all → reveal left-to-right with the fill
       timers.forEach(clearTimeout); timers = [];
-
-      // instantly scramble everything
-      btn.textContent = chars.map(rand).join('');
-
-      // then reveal left→right in sync with the fill slide
+      textEl.textContent = chars.map(rand).join('');
       for (let f = 1; f <= FPS; f++) {
         timers.push(setTimeout(() => {
           const revealTo = Math.floor((f / FPS) * N);
-          btn.textContent = chars.map((c, i) =>
-            i < revealTo ? c : rand(c)
-          ).join('');
-          if (f === FPS) btn.textContent = original;
+          textEl.textContent = chars.map((c, i) => i < revealTo ? c : rand(c)).join('');
+          if (f === FPS) textEl.textContent = original;
         }, (f / FPS) * FILL_MS));
       }
     });
 
     btn.addEventListener('mouseleave', () => {
+      // Slide fill out to the right
+      if (fillAnim) fillAnim.cancel();
+      fillAnim = fill.animate(
+        [{ transform: 'translateX(0%)' }, { transform: 'translateX(110%)' }],
+        { duration: Math.round(FILL_MS * 0.75), easing: EASE, fill: 'forwards' }
+      );
+      fillAnim.onfinish = () => {
+        fill.style.transform = 'translateX(-110%)';
+        fillAnim.cancel();
+        fillAnim = null;
+        btn.style.width = '';
+      };
+
+      // Restore text immediately on leave
       timers.forEach(clearTimeout); timers = [];
-      btn.textContent = original;
+      textEl.textContent = original;
     });
   });
 })();
