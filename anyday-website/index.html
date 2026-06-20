@@ -107,7 +107,7 @@ html, body {
 /* ---------- Hero content (bottom-left) ---------- */
 .content {
   position: absolute; z-index: 4;
-  left: 60px; top: 64.3vh;
+  left: 50px; bottom: 50px;
   width: 460px;
 }
 .headline {
@@ -436,6 +436,36 @@ html, body {
   requestAnimationFrame(frame);
 })();
 
+
+/* ---------- Button text scramble on hover ---------- */
+(function scrambleButtons() {
+  const DIGITS = '0123456789';
+  const FRAMES = 6;
+  const FRAME_MS = 28;
+
+  document.querySelectorAll('.btn').forEach(btn => {
+    const original = btn.textContent;
+    let timer = null;
+
+    btn.addEventListener('mouseenter', () => {
+      clearTimeout(timer);
+      let count = 0;
+      (function tick() {
+        if (count >= FRAMES) { btn.textContent = original; return; }
+        btn.textContent = original.split('').map(c =>
+          c === ' ' ? ' ' : DIGITS[Math.floor(Math.random() * 10)]
+        ).join('');
+        count++;
+        timer = setTimeout(tick, FRAME_MS);
+      })();
+    });
+
+    btn.addEventListener('mouseleave', () => {
+      clearTimeout(timer);
+      btn.textContent = original;
+    });
+  });
+})();
 </script>
 </body>
 </html>
