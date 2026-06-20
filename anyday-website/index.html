@@ -445,9 +445,8 @@ html, body {
 
 /* ---------- Button: sliding fill + scramble ---------- */
 (function scrambleButtons() {
-  const CHARS   = '0123456789!@#$%^&*{}[]|<>?/';
-  const FILL_MS = 480;
-  const FPS     = 24;
+  const SYMBOLS = '!@#$%^&*{}[]|<>?/';
+  const FILL_MS = 520;
   const EASE    = 'cubic-bezier(0.16, 1, 0.3, 1)';
 
   document.querySelectorAll('.btn').forEach(btn => {
@@ -455,7 +454,6 @@ html, body {
     const chars = [...original];
     const N = chars.length;
 
-    // Build: fill pill + text node wrapper
     const fill   = document.createElement('span');
     fill.className = 'btn-fill';
     const textEl = document.createElement('span');
@@ -465,41 +463,43 @@ html, body {
     btn.append(fill, textEl);
 
     let fillAnim = null;
-    let timers   = [];
+    let rafId    = null;
 
     function rand(c) {
-      return c === ' ' ? ' ' : CHARS[Math.floor(Math.random() * CHARS.length)];
+      return c === ' ' ? ' ' : SYMBOLS[Math.floor(Math.random() * SYMBOLS.length)];
     }
 
     btn.addEventListener('mouseenter', () => {
-      // Lock width so surrounding elements don't shift
       btn.style.width = btn.offsetWidth + 'px';
 
-      // Slide fill in from left
       if (fillAnim) { fillAnim.cancel(); fill.style.transform = 'translateX(-110%)'; }
       fillAnim = fill.animate(
         [{ transform: 'translateX(-110%)' }, { transform: 'translateX(0%)' }],
         { duration: FILL_MS, easing: EASE, fill: 'forwards' }
       );
 
-      // Scramble all → reveal left-to-right with the fill
-      timers.forEach(clearTimeout); timers = [];
+      if (rafId) cancelAnimationFrame(rafId);
       textEl.textContent = chars.map(rand).join('');
-      for (let f = 1; f <= FPS; f++) {
-        timers.push(setTimeout(() => {
-          const revealTo = Math.floor((f / FPS) * N);
-          textEl.textContent = chars.map((c, i) => i < revealTo ? c : rand(c)).join('');
-          if (f === FPS) textEl.textContent = original;
-        }, (f / FPS) * FILL_MS));
+
+      const t0 = performance.now();
+      function tick(now) {
+        const progress = Math.min((now - t0) / FILL_MS, 1);
+        const revealTo = Math.floor(progress * N);
+        textEl.textContent = chars.map((c, i) => i < revealTo ? c : rand(c)).join('');
+        if (progress < 1) { rafId = requestAnimationFrame(tick); }
+        else { textEl.textContent = original; rafId = null; }
       }
+      rafId = requestAnimationFrame(tick);
     });
 
     btn.addEventListener('mouseleave', () => {
-      // Slide fill out to the right
+      if (rafId) { cancelAnimationFrame(rafId); rafId = null; }
+      textEl.textContent = original;
+
       if (fillAnim) fillAnim.cancel();
       fillAnim = fill.animate(
         [{ transform: 'translateX(0%)' }, { transform: 'translateX(110%)' }],
-        { duration: Math.round(FILL_MS * 0.75), easing: EASE, fill: 'forwards' }
+        { duration: Math.round(FILL_MS * 0.7), easing: EASE, fill: 'forwards' }
       );
       fillAnim.onfinish = () => {
         fill.style.transform = 'translateX(-110%)';
@@ -507,10 +507,6 @@ html, body {
         fillAnim = null;
         btn.style.width = '';
       };
-
-      // Restore text immediately on leave
-      timers.forEach(clearTimeout); timers = [];
-      textEl.textContent = original;
     });
   });
 })();
