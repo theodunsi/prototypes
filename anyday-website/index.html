@@ -151,8 +151,11 @@ html, body {
 }
 .btn-primary .btn-fill { background: #FFE7A3; }
 .btn-ghost   .btn-fill { background: rgba(255,255,255,0.14); }
-/* Text sits above the fill */
+.menu-btn    .btn-fill { background: rgba(255,255,255,0.20); }
+/* Text and icons sit above the fill */
 .btn-text { position: relative; z-index: 1; }
+.menu-btn { position: relative; overflow: hidden; }
+.menu-btn svg { position: relative; z-index: 1; }
 </style>
 </head>
 <body>
@@ -449,8 +452,10 @@ html, body {
   const FILL_MS = 750;
   const EASE    = 'cubic-bezier(0.16, 1, 0.3, 1)';
 
-  document.querySelectorAll('.btn').forEach(btn => {
-    const original = btn.textContent.trim();
+  document.querySelectorAll('.btn, .menu-btn').forEach(btn => {
+    const original = [...btn.childNodes]
+      .filter(n => n.nodeType === Node.TEXT_NODE)
+      .map(n => n.textContent.trim()).join('').trim();
     const chars = [...original];
     const N = chars.length;
 
@@ -459,8 +464,11 @@ html, body {
     const textEl = document.createElement('span');
     textEl.className = 'btn-text';
     textEl.textContent = original;
+
+    // Preserve any existing child elements (e.g. SVG icon in menu-btn)
+    const existingEls = [...btn.childNodes].filter(n => n.nodeType === Node.ELEMENT_NODE);
     btn.innerHTML = '';
-    btn.append(fill, textEl);
+    btn.append(fill, ...existingEls, textEl);
 
     let fillAnim = null;
     let rafId    = null;
