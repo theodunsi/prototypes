@@ -128,22 +128,26 @@ html, body {
 .actions { display: flex; gap: 12px; margin-top: 32px; }
 .btn {
   display: inline-flex; align-items: center; gap: 8px;
-  height: 36px; padding: 0 12px;       /* 12px inner padding */
-  border-radius: 999px;                /* fully rounded */
+  height: 36px; padding: 0 12px;
+  border-radius: 999px;
   font-size: 14px; font-weight: 400; letter-spacing: -0.015em;
   text-transform: uppercase;
   cursor: pointer; text-decoration: none; white-space: nowrap;
-  transition: transform .15s ease, background .2s, color .2s;
+  transition: transform .15s ease, background-position .3s ease, color .2s;
+  background-size: 200% 100%;
+  background-position: right center;
 }
 .btn:active { transform: translateY(1px); }
+.btn:hover  { background-position: left center; }
 .btn-primary {
-  background: var(--white); color: var(--black);
+  background-image: linear-gradient(to right, #FFE7A3 50%, var(--white) 50%);
+  color: var(--black);
   border: none;
 }
-.btn-primary:hover { background: #FFE7A3; }
-/* Ghost: no background, no border — text only */
+/* Ghost: subtle white fill slides in */
 .btn-ghost {
-  background: transparent; color: var(--white);
+  background-image: linear-gradient(to right, rgba(255,255,255,0.14) 50%, transparent 50%);
+  color: var(--white);
   border: none;
 }
 .btn-ghost:hover { color: rgba(255,255,255,0.7); }
@@ -437,32 +441,45 @@ html, body {
 })();
 
 
-/* ---------- Button text scramble on hover ---------- */
+/* ---------- Button scramble — staggered left→right, tracks the fill slide ---------- */
 (function scrambleButtons() {
-  const DIGITS = '0123456789';
-  const FRAMES = 12;
-  const FRAME_MS = 55;
+  const DIGITS   = '0123456789';
+  const FILL_MS  = 300;   // matches CSS background-position transition
+  const FRAMES   = 3;     // quick scramble frames per character
+  const FRAME_MS = 28;    // ms per frame (fast, like the original)
 
   document.querySelectorAll('.btn').forEach(btn => {
     const original = btn.textContent;
-    let timer = null;
+
+    // Wrap every character in a span so we can animate each independently
+    btn.innerHTML = [...original].map(c =>
+      `<span data-c="${c}">${c}</span>`
+    ).join('');
+
+    const spans = Array.from(btn.querySelectorAll('span'));
+    let timers = [];
 
     btn.addEventListener('mouseenter', () => {
-      clearTimeout(timer);
-      let count = 0;
-      (function tick() {
-        if (count >= FRAMES) { btn.textContent = original; return; }
-        btn.textContent = original.split('').map(c =>
-          c === ' ' ? ' ' : DIGITS[Math.floor(Math.random() * 10)]
-        ).join('');
-        count++;
-        timer = setTimeout(tick, FRAME_MS);
-      })();
+      timers.forEach(clearTimeout); timers = [];
+
+      spans.forEach((span, i) => {
+        const ch = span.dataset.c;
+        if (ch === ' ') return;
+        const start = (i / spans.length) * FILL_MS;
+
+        for (let f = 0; f <= FRAMES; f++) {
+          timers.push(setTimeout(() => {
+            span.textContent = f < FRAMES
+              ? DIGITS[Math.floor(Math.random() * 10)]
+              : ch;
+          }, start + f * FRAME_MS));
+        }
+      });
     });
 
     btn.addEventListener('mouseleave', () => {
-      clearTimeout(timer);
-      btn.textContent = original;
+      timers.forEach(clearTimeout); timers = [];
+      spans.forEach(span => { span.textContent = span.dataset.c; });
     });
   });
 })();
