@@ -441,45 +441,41 @@ html, body {
 })();
 
 
-/* ---------- Button scramble — staggered left→right, tracks the fill slide ---------- */
+/* ---------- Button scramble — left→right reveal tracks the fill slide ---------- */
 (function scrambleButtons() {
-  const DIGITS   = '0123456789';
-  const FILL_MS  = 300;   // matches CSS background-position transition
-  const FRAMES   = 3;     // quick scramble frames per character
-  const FRAME_MS = 28;    // ms per frame (fast, like the original)
+  const DIGITS  = '0123456789';
+  const FILL_MS = 300;  // matches CSS background-position transition
+  const FPS     = 18;   // frames across the full sweep
 
   document.querySelectorAll('.btn').forEach(btn => {
     const original = btn.textContent;
-
-    // Wrap every character in a span so we can animate each independently
-    btn.innerHTML = [...original].map(c =>
-      `<span data-c="${c}">${c}</span>`
-    ).join('');
-
-    const spans = Array.from(btn.querySelectorAll('span'));
+    const chars = [...original];
+    const N = chars.length;
     let timers = [];
+
+    function rand(c) { return c === ' ' ? ' ' : DIGITS[Math.floor(Math.random() * 10)]; }
 
     btn.addEventListener('mouseenter', () => {
       timers.forEach(clearTimeout); timers = [];
 
-      spans.forEach((span, i) => {
-        const ch = span.dataset.c;
-        if (ch === ' ') return;
-        const start = (i / spans.length) * FILL_MS;
+      // instantly scramble everything
+      btn.textContent = chars.map(rand).join('');
 
-        for (let f = 0; f <= FRAMES; f++) {
-          timers.push(setTimeout(() => {
-            span.textContent = f < FRAMES
-              ? DIGITS[Math.floor(Math.random() * 10)]
-              : ch;
-          }, start + f * FRAME_MS));
-        }
-      });
+      // then reveal left→right in sync with the fill slide
+      for (let f = 1; f <= FPS; f++) {
+        timers.push(setTimeout(() => {
+          const revealTo = Math.floor((f / FPS) * N);
+          btn.textContent = chars.map((c, i) =>
+            i < revealTo ? c : rand(c)
+          ).join('');
+          if (f === FPS) btn.textContent = original;
+        }, (f / FPS) * FILL_MS));
+      }
     });
 
     btn.addEventListener('mouseleave', () => {
       timers.forEach(clearTimeout); timers = [];
-      spans.forEach(span => { span.textContent = span.dataset.c; });
+      btn.textContent = original;
     });
   });
 })();
