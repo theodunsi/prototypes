@@ -452,7 +452,31 @@ html, body {
   const FILL_MS = 750;
   const EASE    = 'cubic-bezier(0.16, 1, 0.3, 1)';
 
-  document.querySelectorAll('.btn, .menu-btn').forEach(btn => {
+  // Menu button: fill slide only, no scramble
+  const menuBtn = document.querySelector('.menu-btn');
+  if (menuBtn) {
+    const fill = document.createElement('span');
+    fill.className = 'btn-fill';
+    menuBtn.prepend(fill);
+    let fillAnim = null;
+    menuBtn.addEventListener('mouseenter', () => {
+      if (fillAnim) { fillAnim.cancel(); fill.style.transform = 'translateX(-110%)'; }
+      fillAnim = fill.animate(
+        [{ transform: 'translateX(-110%)' }, { transform: 'translateX(0%)' }],
+        { duration: 750, easing: 'cubic-bezier(0.16, 1, 0.3, 1)', fill: 'forwards' }
+      );
+    });
+    menuBtn.addEventListener('mouseleave', () => {
+      if (fillAnim) fillAnim.cancel();
+      fillAnim = fill.animate(
+        [{ transform: 'translateX(0%)' }, { transform: 'translateX(110%)' }],
+        { duration: 525, easing: 'cubic-bezier(0.16, 1, 0.3, 1)', fill: 'forwards' }
+      );
+      fillAnim.onfinish = () => { fill.style.transform = 'translateX(-110%)'; fillAnim.cancel(); fillAnim = null; };
+    });
+  }
+
+  document.querySelectorAll('.btn').forEach(btn => {
     const original = [...btn.childNodes]
       .filter(n => n.nodeType === Node.TEXT_NODE)
       .map(n => n.textContent.trim()).join('').trim();
@@ -465,15 +489,8 @@ html, body {
     textEl.className = 'btn-text';
     textEl.textContent = original;
 
-    if (btn.classList.contains('menu-btn')) {
-      // Don't touch the SVG — just prepend the fill and swap the text node in place
-      const textNode = [...btn.childNodes].find(n => n.nodeType === Node.TEXT_NODE && n.textContent.trim());
-      btn.prepend(fill);
-      textNode.replaceWith(textEl);
-    } else {
-      btn.innerHTML = '';
-      btn.append(fill, textEl);
-    }
+    btn.innerHTML = '';
+    btn.append(fill, textEl);
 
     let fillAnim = null;
     let rafId    = null;
