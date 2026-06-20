@@ -47,17 +47,15 @@ html, body {
   --line:  rgba(255,255,255,0.16);
 }
 
-/* ---------- Stage (fixed 1440x900, scaled to fit) ---------- */
+/* ---------- Stage (fills viewport) ---------- */
 .viewport {
   position: fixed; inset: 0;
-  display: grid; place-items: center;
 }
 .stage {
   position: relative;
-  width: 1440px; height: 900px;
+  width: 100%; height: 100%;
   background: #000000;
   overflow: hidden;
-  transform-origin: center center;
 }
 
 /* ---------- Background layers ---------- */
@@ -71,7 +69,7 @@ html, body {
    anchored to the bottom edge, layered ABOVE the dot pattern. Used literally. */
 .glow {
   position: absolute; left: 0; bottom: 0; z-index: 1;
-  width: 1440px; height: 752px;
+  width: 100%; height: 83.6%;
   background-image: url("gradient.png");
   background-size: 100% 100%;
   background-repeat: no-repeat;
@@ -80,7 +78,7 @@ html, body {
 /* ---------- Header ---------- */
 .header {
   position: absolute; top: 0; left: 0; z-index: 5;
-  width: 1440px; height: 60px;
+  width: 100%; height: 60px;
   display: flex; align-items: center; justify-content: space-between;
   padding: 0 24px;
 }
@@ -109,7 +107,7 @@ html, body {
 /* ---------- Hero content (bottom-left) ---------- */
 .content {
   position: absolute; z-index: 4;
-  left: 60px; top: 579px;
+  left: 60px; top: 64.3vh;
   width: 460px;
 }
 .headline {
@@ -197,51 +195,58 @@ html, body {
      normal cursor and the field goes static.
    ============================================================ */
 (function dotField() {
-  const W = 1440, H = 900;
   const stage  = document.getElementById("stage");
   const canvas = document.getElementById("field");
   const ctx    = canvas.getContext("2d");
 
-  // Hi-DPI crispness
   const dpr = Math.min(window.devicePixelRatio || 1, 2);
-  canvas.width = W * dpr; canvas.height = H * dpr;
-  canvas.style.width = W + "px"; canvas.style.height = H + "px";
-  ctx.scale(dpr, dpr);
 
   // ---- Tunables ----
-  const GAP       = 8;       // gap between dots (Figma)
-  const BASE      = 2;       // resting dot size (px)
-  const SP        = GAP + BASE; // grid pitch = 10px
-  const BASE_A    = 0.08;    // resting dot opacity (#FFFFFF @ 8%)
-  const MAX_W     = 16.3;    // biggest white box (Figma)
-  const YELLOW_SZ = 20;      // yellow cursor box (Figma ~19.9)
-  const RADIUS    = 150;     // falloff reach from cursor
-  const PUSH      = 0;       // mechanical: grid-locked, no outward displacement
-  const LEGS      = 8;       // exactly 8 lines at a time
-  const Y_FULL    = 408;     // fully active above this (gradient-box top)
-  const Y_OFF     = 488;     // handed off to OS cursor 80px into the gradient
+  const GAP       = 8;
+  const BASE      = 2;
+  const SP        = GAP + BASE;
+  const BASE_A    = 0.08;
+  const MAX_W     = 16.3;
+  const YELLOW_SZ = 20;
+  const RADIUS    = 150;
+  const PUSH      = 0;
+  const LEGS      = 8;
+  const STEP      = 3;
 
-  // ---- Build the grid ----
-  // Dense texture grid (10px). Every STEP-th dot is a "big" dot that can
-  // magnify into a 16px box; the rest stay fine 2px texture between them,
-  // so the popped boxes have room and never merge into a blob.
-  const STEP = 3;            // big-box sub-lattice: every 3rd dot => ~30px
-  const cols = Math.floor((W - SP / 2) / SP) + 1;
-  const rows = Math.floor((H - SP / 2) / SP) + 1;
-  const dots = [];
-  for (let r = 0; r < rows; r++) {
-    for (let c = 0; c < cols; c++) {
-      dots.push({
-        hx: SP / 2 + c * SP, hy: SP / 2 + r * SP,
-        x: 0, y: 0, s: BASE, a: BASE_A,
-        big: (c % STEP === 0 && r % STEP === 0)
-      });
+  // mutable viewport dims + derived values — updated on resize
+  let W, H, Y_FULL, Y_OFF;
+  let cols, rows, dots, bigPitch, bigCols, bigRows;
+
+  function buildGrid() {
+    W = window.innerWidth;
+    H = window.innerHeight;
+    Y_FULL = H * 0.4533;   // 408/900
+    Y_OFF  = H * 0.5422;   // 488/900
+
+    canvas.width  = W * dpr; canvas.height = H * dpr;
+    canvas.style.width  = W + "px"; canvas.style.height = H + "px";
+    ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
+
+    cols = Math.floor((W - SP / 2) / SP) + 1;
+    rows = Math.floor((H - SP / 2) / SP) + 1;
+    dots = [];
+    for (let r = 0; r < rows; r++) {
+      for (let c = 0; c < cols; c++) {
+        dots.push({
+          hx: SP / 2 + c * SP, hy: SP / 2 + r * SP,
+          x: 0, y: 0, s: BASE, a: BASE_A,
+          big: (c % STEP === 0 && r % STEP === 0)
+        });
+      }
     }
+    bigPitch = SP * STEP;
+    bigCols  = Math.floor((cols - 1) / STEP) + 1;
+    bigRows  = Math.floor((rows - 1) / STEP) + 1;
   }
-  // nearest BIG dot to a point (legs only step onto big dots)
-  const bigPitch = SP * STEP;
-  const bigCols  = Math.floor((cols - 1) / STEP) + 1;
-  const bigRows  = Math.floor((rows - 1) / STEP) + 1;
+
+  buildGrid();
+  window.addEventListener("resize", buildGrid);
+
   const nearestBig = (px, py) => {
     const bc = Math.max(0, Math.min(bigCols - 1, Math.round((px - SP / 2) / bigPitch)));
     const br = Math.max(0, Math.min(bigRows - 1, Math.round((py - SP / 2) / bigPitch)));
@@ -268,9 +273,8 @@ html, body {
   }
 
   function toStage(e) {
-    const rect = canvas.getBoundingClientRect();
-    rawX = (e.clientX - rect.left) * (W / rect.width);
-    rawY = (e.clientY - rect.top)  * (H / rect.height);
+    rawX = e.clientX;
+    rawY = e.clientY;
   }
   stage.addEventListener("mousemove", (e) => { toStage(e); over = true; lastMove = performance.now(); });
   stage.addEventListener("mouseenter", (e) => { toStage(e); mx = rawX; my = rawY; over = true; lastMove = performance.now(); });
@@ -294,14 +298,11 @@ html, body {
   const uiEls = [document.querySelector(".wordmark"), document.querySelector(".menu-btn")];
   const UI_PAD = 28;
   function nearUI(px, py) {
-    const cr = canvas.getBoundingClientRect();
-    const sc = W / cr.width;
     for (const el of uiEls) {
       if (!el) continue;
       const r = el.getBoundingClientRect();
-      const l = (r.left - cr.left) * sc - UI_PAD, t = (r.top - cr.top) * sc - UI_PAD;
-      const rt = (r.right - cr.left) * sc + UI_PAD, b = (r.bottom - cr.top) * sc + UI_PAD;
-      if (px >= l && px <= rt && py >= t && py <= b) return true;
+      if (px >= r.left - UI_PAD && px <= r.right + UI_PAD &&
+          py >= r.top  - UI_PAD && py <= r.bottom + UI_PAD) return true;
     }
     return false;
   }
@@ -383,7 +384,7 @@ html, body {
     }
 
     // --- draw ---
-    ctx.clearRect(0, 0, W, H);
+    ctx.clearRect(0, 0, window.innerWidth, window.innerHeight);
 
     // legs (pure white, under the boxes)
     if (walking) {
@@ -435,16 +436,6 @@ html, body {
   requestAnimationFrame(frame);
 })();
 
-/* ---------- Scale the 1440x900 stage to fit the window ---------- */
-(function fitStage() {
-  const stage = document.getElementById("stage");
-  function resize() {
-    const s = Math.min(window.innerWidth / 1440, window.innerHeight / 900);
-    stage.style.transform = `scale(${s})`;
-  }
-  window.addEventListener("resize", resize);
-  resize();
-})();
 </script>
 </body>
 </html>
