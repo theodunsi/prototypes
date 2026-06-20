@@ -1,0 +1,6 @@
+# reference clip — not part of the deployed site (35MB)
+video.mov
+
+# assets no longer used by index.html (kept locally for reference)
+pattern.png
+menu.svg

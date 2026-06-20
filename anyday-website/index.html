@@ -1,0 +1,450 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>Anyday — Unified WebOps</title>
+
+<!--
+  Anyday hero — single-file prototype rebuilt from Figma (node 467-13891).
+  Layout is a fixed 1440x900 "stage" that scales to fit the window, so the
+  proportions stay pixel-true to the design at any screen size.
+-->
+
+<style>
+/* ---------- Fonts ---------- */
+/* Denton = the editorial display serif used in the headline.
+   Inter = body/UI text (the one token Figma actually exported). */
+@font-face {
+  font-family: "Denton";
+  src: url("Denton-Font-Family/Denton Test Light 300.otf") format("opentype");
+  font-weight: 300; font-style: normal; font-display: swap;
+}
+@font-face {
+  font-family: "Denton";
+  src: url("Denton-Font-Family/Denton Test Regular 400.otf") format("opentype");
+  font-weight: 400; font-style: normal; font-display: swap;
+}
+@font-face {
+  font-family: "Denton";
+  src: url("Denton-Font-Family/Denton Test Medium 500.otf") format("opentype");
+  font-weight: 500; font-style: normal; font-display: swap;
+}
+@import url("https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&family=Manrope:wght@500;600;700&display=swap");
+
+/* ---------- Reset + base ---------- */
+* { margin: 0; padding: 0; box-sizing: border-box; }
+html, body {
+  height: 100%;
+  background: #000000;           /* matte black surround */
+  font-family: "Inter", system-ui, sans-serif;
+  overflow: hidden;
+}
+:root {
+  --black: #0A0A0A;              /* Grey/900 token */
+  --white: #FFFFFF;             /* Grey/50 token */
+  --muted: #A7A29B;            /* subhead gray (eyeballed) */
+  --line:  rgba(255,255,255,0.16);
+}
+
+/* ---------- Stage (fixed 1440x900, scaled to fit) ---------- */
+.viewport {
+  position: fixed; inset: 0;
+  display: grid; place-items: center;
+}
+.stage {
+  position: relative;
+  width: 1440px; height: 900px;
+  background: #000000;
+  overflow: hidden;
+  transform-origin: center center;
+}
+
+/* ---------- Background layers ---------- */
+/* Live interactive dot field (canvas) — replaces the static pattern.png.
+   Sits BEHIND the gradient. The whole reactive effect is drawn here. */
+.field {
+  position: absolute; inset: 0; z-index: 0;
+  display: block;
+}
+/* Real bottom gradient exported from Figma (2880x1504 = 2x of 1440x752),
+   anchored to the bottom edge, layered ABOVE the dot pattern. Used literally. */
+.glow {
+  position: absolute; left: 0; bottom: 0; z-index: 1;
+  width: 1440px; height: 752px;
+  background-image: url("gradient.png");
+  background-size: 100% 100%;
+  background-repeat: no-repeat;
+}
+
+/* ---------- Header ---------- */
+.header {
+  position: absolute; top: 0; left: 0; z-index: 5;
+  width: 1440px; height: 60px;
+  display: flex; align-items: center; justify-content: space-between;
+  padding: 0 24px;
+}
+.wordmark {
+  font-family: "Manrope", sans-serif;
+  font-weight: 700; font-size: 22px; letter-spacing: -0.025em;
+  color: var(--white);
+}
+/* MENU button: glassy white @16%, blur(4), fully rounded, same text specs as CTAs.
+   60px gap between the icon and the MENU label (matches Figma). */
+.menu-btn {
+  display: flex; align-items: center; gap: 60px;
+  height: 36px; padding: 0 12px;
+  border: none; border-radius: 999px;
+  background: rgba(255,255,255,0.16);
+  -webkit-backdrop-filter: blur(4px);
+          backdrop-filter: blur(4px);
+  color: var(--white);
+  font-size: 14px; font-weight: 400; letter-spacing: -0.015em;
+  text-transform: uppercase;
+  cursor: pointer; transition: background .2s;
+}
+.menu-btn:hover { background: rgba(255,255,255,0.24); }
+.menu-btn svg { display: block; }
+
+/* ---------- Hero content (bottom-left) ---------- */
+.content {
+  position: absolute; z-index: 4;
+  left: 60px; top: 579px;
+  width: 460px;
+}
+.headline {
+  font-family: "Denton", serif;
+  font-weight: 400;
+  font-size: 60px; line-height: 1.0;
+  letter-spacing: -0.01em;
+  color: var(--white);
+}
+.headline .accent { font-weight: 500; }
+.headline .dim { color: rgba(255,255,255,0.5); }
+.subhead {
+  margin-top: 10px;                 /* 10px gap below the headline */
+  width: 420px;
+  font-size: 14px; line-height: 1.5; letter-spacing: -0.01em;
+  color: rgba(255,255,255,0.8);     /* white @ 80% */
+}
+.actions { display: flex; gap: 12px; margin-top: 32px; }
+.btn {
+  display: inline-flex; align-items: center; gap: 8px;
+  height: 36px; padding: 0 12px;       /* 12px inner padding */
+  border-radius: 999px;                /* fully rounded */
+  font-size: 14px; font-weight: 400; letter-spacing: -0.015em;
+  text-transform: uppercase;
+  cursor: pointer; text-decoration: none; white-space: nowrap;
+  transition: transform .15s ease, background .2s, color .2s;
+}
+.btn:active { transform: translateY(1px); }
+.btn-primary {
+  background: var(--white); color: var(--black);
+  border: none;
+}
+.btn-primary:hover { background: #FFE7A3; }
+/* Ghost: no background, no border — text only */
+.btn-ghost {
+  background: transparent; color: var(--white);
+  border: none;
+}
+.btn-ghost:hover { color: rgba(255,255,255,0.7); }
+</style>
+</head>
+<body>
+<div class="viewport">
+  <div class="stage" id="stage">
+
+    <canvas class="field" id="field"></canvas>
+    <div class="glow"></div>
+
+    <!-- Header -->
+    <header class="header">
+      <div class="wordmark">ANYDAY</div>
+      <button class="menu-btn">
+        <svg width="16" height="16" viewBox="0 0 16 16" fill="none" aria-hidden="true">
+          <path fill-rule="evenodd" clip-rule="evenodd" d="M2 5.66667C2 5.29848 2.29848 5 2.66667 5H13.3333C13.7015 5 14 5.29848 14 5.66667C14 6.03486 13.7015 6.33333 13.3333 6.33333H2.66667C2.29848 6.33333 2 6.03485 2 5.66667Z" fill="currentColor"/>
+          <path fill-rule="evenodd" clip-rule="evenodd" d="M2 10.3332C2 9.96497 2.29848 9.6665 2.66667 9.6665H13.3333C13.7015 9.6665 14 9.96497 14 10.3332C14 10.7014 13.7015 10.9998 13.3333 10.9998H2.66667C2.29848 10.9998 2 10.7014 2 10.3332Z" fill="currentColor"/>
+        </svg>
+        MENU
+      </button>
+    </header>
+
+    <!-- Hero copy -->
+    <div class="content">
+      <h1 class="headline">Unified WebOps,<br /><span class="accent"><span class="dim">built</span> on Sanity.</span></h1>
+      <p class="subhead">Anyday is a trusted Sanity Agency Partner helping multi-brand organizations manage every site, brand, and property from one shared web infrastructure.</p>
+      <div class="actions">
+        <a class="btn btn-primary" href="#">START A WEBOPS AUDIT</a>
+        <a class="btn btn-ghost" href="#">SEE THE METHOD</a>
+      </div>
+    </div>
+
+  </div>
+</div>
+
+<script>
+/* ============================================================
+   Interactive dot field
+   - Resting state: plain 2px dots, #FFFFFF @ 8%, on an 8px-gap grid.
+   - Cursor in the dot region: an independent yellow box rides the
+     cursor; nearby dots grow (up to ~16px) AND push outward
+     (lens/magnify) so a clean gap opens under the yellow box.
+   - Exactly 8 white lines link the yellow box to nearby boxes; they
+     re-step one at a time and glide smoothly — like an insect's legs
+     walking across the boxes (no collective snapping).
+   - Moving down toward the gradient softly hands control back to the
+     normal cursor and the field goes static.
+   ============================================================ */
+(function dotField() {
+  const W = 1440, H = 900;
+  const stage  = document.getElementById("stage");
+  const canvas = document.getElementById("field");
+  const ctx    = canvas.getContext("2d");
+
+  // Hi-DPI crispness
+  const dpr = Math.min(window.devicePixelRatio || 1, 2);
+  canvas.width = W * dpr; canvas.height = H * dpr;
+  canvas.style.width = W + "px"; canvas.style.height = H + "px";
+  ctx.scale(dpr, dpr);
+
+  // ---- Tunables ----
+  const GAP       = 8;       // gap between dots (Figma)
+  const BASE      = 2;       // resting dot size (px)
+  const SP        = GAP + BASE; // grid pitch = 10px
+  const BASE_A    = 0.08;    // resting dot opacity (#FFFFFF @ 8%)
+  const MAX_W     = 16.3;    // biggest white box (Figma)
+  const YELLOW_SZ = 20;      // yellow cursor box (Figma ~19.9)
+  const RADIUS    = 150;     // falloff reach from cursor
+  const PUSH      = 0;       // mechanical: grid-locked, no outward displacement
+  const LEGS      = 8;       // exactly 8 lines at a time
+  const Y_FULL    = 408;     // fully active above this (gradient-box top)
+  const Y_OFF     = 488;     // handed off to OS cursor 80px into the gradient
+
+  // ---- Build the grid ----
+  // Dense texture grid (10px). Every STEP-th dot is a "big" dot that can
+  // magnify into a 16px box; the rest stay fine 2px texture between them,
+  // so the popped boxes have room and never merge into a blob.
+  const STEP = 3;            // big-box sub-lattice: every 3rd dot => ~30px
+  const cols = Math.floor((W - SP / 2) / SP) + 1;
+  const rows = Math.floor((H - SP / 2) / SP) + 1;
+  const dots = [];
+  for (let r = 0; r < rows; r++) {
+    for (let c = 0; c < cols; c++) {
+      dots.push({
+        hx: SP / 2 + c * SP, hy: SP / 2 + r * SP,
+        x: 0, y: 0, s: BASE, a: BASE_A,
+        big: (c % STEP === 0 && r % STEP === 0)
+      });
+    }
+  }
+  // nearest BIG dot to a point (legs only step onto big dots)
+  const bigPitch = SP * STEP;
+  const bigCols  = Math.floor((cols - 1) / STEP) + 1;
+  const bigRows  = Math.floor((rows - 1) / STEP) + 1;
+  const nearestBig = (px, py) => {
+    const bc = Math.max(0, Math.min(bigCols - 1, Math.round((px - SP / 2) / bigPitch)));
+    const br = Math.max(0, Math.min(bigRows - 1, Math.round((py - SP / 2) / bigPitch)));
+    return (br * STEP) * cols + (bc * STEP);
+  };
+
+  // ---- State ----
+  let rawX = -9999, rawY = -9999;   // latest pointer (stage coords)
+  let mx = -9999, my = -9999;       // eased pointer (= yellow box position)
+  let over = false;
+  let act = 0;                      // eased activation 0..1
+  let lastMove = -1e9;              // timestamp of last pointer movement
+  let prevRawX = -9999, prevRawY = -9999;
+  let pmx = -9999, pmy = -9999;     // previous box position (for travel)
+  let stepAccum = 0, legStepCursor = 0;
+
+  // 8 "legs" — each holds a fixed offset (direction within its sector + distance)
+  // from the body and plants on the big-dot nearest that offset. The endpoint is
+  // recomputed from the LIVE cursor every frame, so it tracks sharply (no drag) and
+  // always sits EXACTLY on a dot. The "step" is a staggered re-roll of the offset.
+  const legs = [];
+  for (let i = 0; i < LEGS; i++) {
+    legs.push({ sector: i, ang: 0, rad: 0, idx: 0, next: 0, ex: 0, ey: 0, planted: false });
+  }
+
+  function toStage(e) {
+    const rect = canvas.getBoundingClientRect();
+    rawX = (e.clientX - rect.left) * (W / rect.width);
+    rawY = (e.clientY - rect.top)  * (H / rect.height);
+  }
+  stage.addEventListener("mousemove", (e) => { toStage(e); over = true; lastMove = performance.now(); });
+  stage.addEventListener("mouseenter", (e) => { toStage(e); mx = rawX; my = rawY; over = true; lastMove = performance.now(); });
+  stage.addEventListener("mouseleave", () => { over = false; });
+
+  // Re-roll a leg's offset: a direction within its angular sector + a far-leaning
+  // distance. This is the "step" — the leg hops to a new dot.
+  const TAU = Math.PI * 2;
+  const PLANT_MIN = SP * 3, PLANT_MAX = RADIUS * 0.92;
+  function assignOffset(leg, now) {
+    const sectorSize = TAU / LEGS;
+    leg.ang = leg.sector * sectorSize + (Math.random() - 0.5) * sectorSize * 0.9;
+    leg.rad = PLANT_MIN + (PLANT_MAX - PLANT_MIN) * Math.pow(Math.random(), 0.6);
+    leg.next = now + 450 + Math.random() * 950;   // staggered step cadence
+  }
+
+  const smooth = (t) => t * t * (3 - 2 * t);       // smoothstep
+
+  // Crucial UI (logo + MENU): when the pointer comes near, the animation bows out
+  // and the normal cursor takes over so they're easy to click.
+  const uiEls = [document.querySelector(".wordmark"), document.querySelector(".menu-btn")];
+  const UI_PAD = 28;
+  function nearUI(px, py) {
+    const cr = canvas.getBoundingClientRect();
+    const sc = W / cr.width;
+    for (const el of uiEls) {
+      if (!el) continue;
+      const r = el.getBoundingClientRect();
+      const l = (r.left - cr.left) * sc - UI_PAD, t = (r.top - cr.top) * sc - UI_PAD;
+      const rt = (r.right - cr.left) * sc + UI_PAD, b = (r.bottom - cr.top) * sc + UI_PAD;
+      if (px >= l && px <= rt && py >= t && py <= b) return true;
+    }
+    return false;
+  }
+
+  function frame(now) {
+    // --- activation from pointer Y (soft fade into the gradient) ---
+    let target = 0;
+    if (over && !nearUI(rawX, rawY)) {     // suppress near logo / MENU
+      target = rawY <= Y_FULL ? 1
+             : rawY >= Y_OFF  ? 0
+             : 1 - (rawY - Y_FULL) / (Y_OFF - Y_FULL);
+    }
+    act += (target - act) * 0.10;
+
+    // --- weighted yellow box: in the dot zone it moves at a deliberate WALKING
+    //     pace (eased + speed-capped), so the box-to-box snaps read as steps
+    //     instead of sliding. Outside the zone the OS cursor takes over, so we let
+    //     the box snap tight there. ---
+    if (over) {
+      if (act > 0.02) {
+        const BODY_EASE = 0.16, MAX_STEP = 7;           // deliberate walk pace
+        let nx = (rawX - mx) * BODY_EASE, ny = (rawY - my) * BODY_EASE;
+        const mag = Math.hypot(nx, ny) || 0.0001;
+        if (mag > MAX_STEP) { nx = nx / mag * MAX_STEP; ny = ny / mag * MAX_STEP; }
+        mx += nx; my += ny;
+      } else {
+        mx += (rawX - mx) * 0.5; my += (rawY - my) * 0.5;
+      }
+    }
+
+    // hand the OS cursor back once we're mostly in the gradient
+    stage.style.cursor = act > 0.5 ? "none" : "default";
+
+    // --- the box's TRAVEL drives the walk: every ~cell of movement the next leg
+    //     hops to a fresh dot. No travel => no steps => frozen. ---
+    const STEP_DIST = 26;
+    if (act > 0.02) {
+      if (pmx > -9000) {
+        stepAccum += Math.hypot(mx - pmx, my - pmy);
+        while (stepAccum >= STEP_DIST) {
+          stepAccum -= STEP_DIST;
+          legStepCursor = (legStepCursor + 1) % LEGS;
+          assignOffset(legs[legStepCursor], now);
+        }
+      }
+      pmx = mx; pmy = my;
+    } else { pmx = mx; pmy = my; stepAccum = 0; }
+
+    // --- legs: each endpoint = the big-dot nearest (weighted box + leg offset),
+    //     recomputed every frame → always exactly on a dot, snapped tight to the
+    //     box (no line-drag). Steps are driven by box travel (above). ---
+    const walking = act > 0.02;
+    const used = new Set();
+    for (const leg of legs) {
+      if (!walking) { leg.planted = false; continue; }
+      if (!leg.planted) { assignOffset(leg, now); leg.planted = true; }
+      // dot nearest (weighted box + offset), kept distinct → on-grid, snapped to box
+      let rad = leg.rad, idx = 0, tries = 0;
+      do {
+        idx = nearestBig(mx + Math.cos(leg.ang) * rad, my + Math.sin(leg.ang) * rad);
+        rad *= 1.12; tries++;
+      } while (used.has(idx) && tries < 6);
+      used.add(idx); leg.idx = idx;
+      const d = dots[idx];
+      leg.ex = d.x; leg.ey = d.y;          // exactly on the dot — no float, no drag
+    }
+
+    // --- compute positions/sizes; only big dots magnify + push ---
+    for (const dot of dots) {
+      if (!dot.big) { dot.x = dot.hx; dot.y = dot.hy; dot.s = BASE; dot.a = BASE_A; continue; }
+      const dx = dot.hx - mx, dy = dot.hy - my;
+      const dist = Math.hypot(dx, dy) || 0.0001;
+      const f = (dist < RADIUS ? smooth(1 - dist / RADIUS) : 0) * act;
+      const push = PUSH * f;
+      dot.x = dot.hx + (dx / dist) * push;   // outward lens displacement
+      dot.y = dot.hy + (dy / dist) * push;
+      dot.s = BASE + (MAX_W - BASE) * f;
+      dot.a = BASE_A + (1 - BASE_A) * f;
+    }
+
+    // --- draw ---
+    ctx.clearRect(0, 0, W, H);
+
+    // legs (pure white, under the boxes)
+    if (walking) {
+      ctx.lineWidth = 1;
+      ctx.strokeStyle = `rgba(255,255,255,${act})`;
+      ctx.beginPath();
+      for (const leg of legs) {
+        ctx.moveTo(mx, my);
+        ctx.lineTo(leg.ex, leg.ey);
+      }
+      ctx.stroke();
+    }
+
+    // white boxes — batch the tiny resting dots (one fillStyle), detail the rest
+    ctx.fillStyle = `rgba(255,255,255,${BASE_A})`;
+    const near = [];
+    for (const d of dots) {
+      if (d.s > BASE + 0.3) { near.push(d); }
+      else { ctx.fillRect(d.x - BASE / 2, d.y - BASE / 2, BASE, BASE); }
+    }
+    for (const d of near) {
+      const half = d.s / 2;
+      ctx.fillStyle = `rgba(255,255,255,${d.a})`;
+      roundRect(d.x - half, d.y - half, d.s, d.s, Math.min(2, d.s * 0.2));
+      ctx.fill();
+    }
+
+    // independent yellow cursor box on top
+    if (walking) {
+      const half = YELLOW_SZ / 2;
+      ctx.fillStyle = `rgba(245,166,35,${act})`;   // #F5A623
+      roundRect(mx - half, my - half, YELLOW_SZ, YELLOW_SZ, 3);
+      ctx.fill();
+    }
+
+    requestAnimationFrame(frame);
+  }
+
+  function roundRect(x, y, w, h, r) {
+    ctx.beginPath();
+    ctx.moveTo(x + r, y);
+    ctx.arcTo(x + w, y, x + w, y + h, r);
+    ctx.arcTo(x + w, y + h, x, y + h, r);
+    ctx.arcTo(x, y + h, x, y, r);
+    ctx.arcTo(x, y, x + w, y, r);
+    ctx.closePath();
+  }
+
+  requestAnimationFrame(frame);
+})();
+
+/* ---------- Scale the 1440x900 stage to fit the window ---------- */
+(function fitStage() {
+  const stage = document.getElementById("stage");
+  function resize() {
+    const s = Math.min(window.innerWidth / 1440, window.innerHeight / 900);
+    stage.style.transform = `scale(${s})`;
+  }
+  window.addEventListener("resize", resize);
+  resize();
+})();
+</script>
+</body>
+</html>
