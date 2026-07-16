@@ -364,7 +364,7 @@ export default function Home() {
             spreads label to top, pills to bottom). On mobile it becomes `contents`
             so its children flow into the section flex and can be ordered around the
             bio — giving the mobile stack: label → bio → pills. */}
-        <div className="contents lg:flex lg:flex-col lg:justify-between lg:max-w-[349px]">
+        <div className="contents lg:flex lg:flex-col lg:justify-between lg:max-w-[520px]">
           <Reveal className="order-1 lg:order-none">
             <SectionLabel>[Who am I]</SectionLabel>
           </Reveal>
