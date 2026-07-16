@@ -56,6 +56,8 @@ export default function SoundProvider({ children }: { children: React.ReactNode 
   useEffect(() => {
     if (!enabled) return
     const onPointerDown = (e: PointerEvent) => {
+      // Desktop only — no click sound for touch taps (i.e. on mobile)
+      if (e.pointerType === 'touch') return
       const target = e.target as HTMLElement | null
       if (!target?.closest('a, button, [data-click-sound]')) return
       const click = clickRef.current

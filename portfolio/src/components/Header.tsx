@@ -25,21 +25,19 @@ export default function Header() {
           {profile.available ? 'Available for work' : 'Currently booked'}
         </span>
       </div>
-      <div className="flex items-center rounded-full bg-surface px-1 py-0.5">
-        <button
-          onClick={toggle}
-          className="grid size-7 place-items-center rounded-full transition-colors hover:bg-hairline"
-          aria-label={enabled ? 'Mute' : 'Unmute'}
-          aria-pressed={enabled}
-        >
-          {/* Instant swap — no transition. Muted by default → mute icon shows. */}
-          <img
-            src={enabled ? '/assets/icons/volume-high.svg' : '/assets/icons/volume-mute.svg'}
-            alt=""
-            className="size-5"
-          />
-        </button>
-      </div>
+      <button
+        onClick={toggle}
+        className="grid size-11 place-items-center rounded-full bg-surface transition-colors hover:bg-hairline"
+        aria-label={enabled ? 'Mute' : 'Unmute'}
+        aria-pressed={enabled}
+      >
+        {/* Instant swap — no transition. Muted by default → mute icon shows. */}
+        <img
+          src={enabled ? '/assets/icons/volume-high.svg' : '/assets/icons/volume-mute.svg'}
+          alt=""
+          className="size-5"
+        />
+      </button>
     </motion.header>
   )
 }

@@ -45,7 +45,7 @@ function PillButton({ label, href }: { label: string; href: string }) {
       whileHover={{ scale: 1.04 }}
       whileTap={{ scale: 0.97 }}
       transition={{ type: 'spring', stiffness: 400, damping: 22 }}
-      className="inline-flex h-[32px] items-center gap-1 rounded-full bg-inverse px-3 text-[14px] font-medium text-inverse-ink"
+      className="inline-flex h-11 items-center gap-1 rounded-full bg-inverse px-5 text-[14px] font-medium text-inverse-ink"
     >
       <img src="/assets/icons/mail.svg" alt="" className="size-4" style={{ filter: 'var(--icon-invert)' }} />
       {label}
@@ -83,7 +83,7 @@ function CopyEmailButton() {
       layout
       transition={{ layout: { duration: 0.4, ease: [0.22, 1, 0.36, 1] } }}
       aria-label={`Copy email address ${profile.email}`}
-      className="inline-flex h-[32px] w-fit cursor-pointer items-center gap-1 overflow-hidden rounded-full bg-surface px-3 text-[14px] font-medium uppercase text-ink transition-colors hover:bg-hairline"
+      className="inline-flex h-11 w-fit cursor-pointer items-center gap-1 overflow-hidden rounded-full bg-surface px-5 text-[14px] font-medium uppercase text-ink transition-colors hover:bg-hairline"
     >
       {/* Icon crossfades copy → check. Both are absolutely stacked in a fixed
           16px box so the swap can't nudge the button's width mid-animation. */}
@@ -134,7 +134,7 @@ function ExplorationTile({
     <motion.div
       variants={fadeUp}
       whileHover={{ scale: 1.02 }}
-      className="relative aspect-[3/2] w-full cursor-pointer overflow-hidden rounded-[5px] bg-surface"
+      className="relative -mx-6 aspect-[3/2] w-auto cursor-pointer overflow-hidden rounded-none bg-surface sm:mx-0 sm:w-full sm:rounded-[5px]"
     >
       {!open && (
         <motion.video
@@ -271,7 +271,7 @@ export default function Home() {
                   key={c}
                   src={`/assets/icons/flower-${c}.svg`}
                   alt=""
-                  className="size-6 cursor-pointer"
+                  className="size-7 cursor-pointer"
                   // Static until hovered; then spins continuously, and eases back to rest on mouse-out
                   whileHover={reduce ? undefined : { rotate: 360, transition: { duration: 1.1, repeat: Infinity, ease: 'linear' } }}
                   transition={{ duration: 0.4, ease: 'easeOut' }}
@@ -287,7 +287,7 @@ export default function Home() {
           initial={{ opacity: 0, y: 32 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.7, ease: [0.22, 1, 0.36, 1], delay: 0.25 }}
-          className="aspect-[4/3] w-full overflow-hidden rounded-[5px] bg-surface"
+          className="-mx-6 aspect-[4/3] w-auto overflow-hidden rounded-none bg-surface sm:mx-0 sm:w-full sm:rounded-[5px]"
         >
           <video
             src="/assets/images/explorations/showreel-26.mp4"
@@ -339,7 +339,7 @@ export default function Home() {
             whileHover={{ scale: 1.04 }}
             whileTap={{ scale: 0.97 }}
             transition={{ type: 'spring', stiffness: 400, damping: 22 }}
-            className="inline-flex h-[32px] items-center gap-1 rounded-full bg-inverse px-3 text-[14px] font-medium text-inverse-ink"
+            className="inline-flex h-11 items-center gap-1 rounded-full bg-inverse px-5 text-[14px] font-medium text-inverse-ink"
           >
             SEE PROJECTS ARCHIVE
             <img
@@ -353,10 +353,13 @@ export default function Home() {
       </section>
 
       {/* Who am I */}
-      <section className={`flex flex-col justify-between gap-12 py-[50px] lg:flex-row ${INSET}`}>
-        {/* Left: label + tags */}
-        <div className="flex flex-col justify-between gap-12 lg:max-w-[349px]">
-          <Reveal>
+      <section className={`flex flex-col gap-12 py-[50px] lg:flex-row lg:justify-between ${INSET}`}>
+        {/* Label + pills. On desktop this is a real left column (justify-between
+            spreads label to top, pills to bottom). On mobile it becomes `contents`
+            so its children flow into the section flex and can be ordered around the
+            bio — giving the mobile stack: label → bio → pills. */}
+        <div className="contents lg:flex lg:flex-col lg:justify-between lg:gap-12 lg:max-w-[349px]">
+          <Reveal className="order-1 lg:order-none">
             <SectionLabel>[Who am I]</SectionLabel>
           </Reveal>
           <motion.div
@@ -364,14 +367,14 @@ export default function Home() {
             initial="hidden"
             whileInView="show"
             viewport={inView}
-            className="flex flex-wrap gap-2"
+            className="order-3 flex flex-wrap gap-2 lg:order-none"
           >
             {tags.map((tag) => (
               <motion.span
                 key={tag}
                 variants={fadeUp}
                 whileHover={{ y: -2 }}
-                className="flex h-[30px] items-center rounded-[6px] bg-surface px-3 text-[14px] capitalize text-ink transition-colors hover:bg-hairline"
+                className="flex h-9 items-center rounded-[7px] bg-surface px-4 text-[15px] capitalize text-ink transition-colors hover:bg-hairline"
               >
                 {tag}
               </motion.span>
@@ -379,13 +382,13 @@ export default function Home() {
           </motion.div>
         </div>
 
-        {/* Right: bio */}
+        {/* Bio — sits between label and pills on mobile (order-2), right column on desktop */}
         <motion.p
           variants={fadeUp}
           initial="hidden"
           whileInView="show"
           viewport={inView}
-          className="max-w-[400px] font-display text-[36px] leading-[1.1] text-ink"
+          className="order-2 max-w-[400px] font-display text-[36px] leading-[1.1] text-ink lg:order-none"
         >
           {profile.bio.parts.map((part, i) => (
             <span key={i} className={part.muted ? 'text-ink-muted' : undefined}>

@@ -22,7 +22,7 @@ function MediaBox({ base }: { base: string }) {
       initial="hidden"
       whileInView="show"
       viewport={inView}
-      className="relative h-[720px] w-full overflow-hidden rounded-[5px] bg-surface"
+      className="relative -mx-6 aspect-[3/2] w-auto overflow-hidden rounded-none bg-surface sm:mx-0 sm:aspect-auto sm:h-[720px] sm:w-full sm:rounded-[5px]"
     >
       {kind === 'img' && (
         <img
@@ -67,7 +67,7 @@ function NavButton({
   onClick?: () => void
 }) {
   const disabled = !to && !onClick
-  const cls = `inline-flex h-[32px] items-center gap-1 rounded-full bg-surface px-3 text-[14px] font-medium uppercase text-ink transition-colors hover:bg-hairline ${
+  const cls = `inline-flex h-11 items-center gap-1 rounded-full bg-surface px-5 text-[14px] font-medium uppercase text-ink transition-colors hover:bg-hairline ${
     disabled ? 'pointer-events-none opacity-50' : ''
   }`
   const img = <img src={icon} alt="" className="size-4" />
@@ -105,7 +105,7 @@ export default function ProjectDetail() {
           <p className="font-display text-[36px] leading-[1.1] text-ink">Project not found</p>
           <Link
             to="/"
-            className="inline-flex h-[32px] items-center rounded-full bg-surface px-3 text-[14px] font-medium uppercase text-ink transition-colors hover:bg-hairline"
+            className="inline-flex h-11 items-center rounded-full bg-surface px-5 text-[14px] font-medium uppercase text-ink transition-colors hover:bg-hairline"
           >
             Back to home
           </Link>
@@ -139,36 +139,21 @@ export default function ProjectDetail() {
 
       {/* Content */}
       <section className={`relative pt-[50px] ${INSET}`}>
-        {/* Back button — outdented to the left of the content grid on large screens */}
-        <Link
-          to="/"
-          aria-label="Back to home"
-          className="absolute top-[50px] left-6 grid h-[30px] w-[40px] place-items-center rounded-full bg-surface transition-colors hover:bg-hairline sm:left-10 lg:left-20 xl:left-[94px]"
-        >
-          <img src="/assets/icons/arrow-back.svg" alt="" className="size-4" />
-        </Link>
-
-        {/* pt clearance on mobile so the title clears the absolute back button */}
-        <div className="flex flex-col gap-3 pt-12 lg:pt-0">
-          {/* Intro: title row + description, then the hero media */}
+        <div className="flex flex-col gap-3">
+          {/* Intro: back+action row, title, pills, supporting text — then hero media */}
           <div className="flex flex-col gap-[50px]">
             <div className="flex flex-col gap-6">
-              <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
-                <div className="flex items-center gap-4">
-                  <h1 className="font-display text-[28px] leading-none text-ink">{project.title}</h1>
-                  <div className="flex items-center gap-1">
-                    {project.tags.map((tag) => (
-                      <span
-                        key={tag}
-                        className="flex h-[30px] items-center rounded-[6px] bg-surface px-3 text-[14px] uppercase text-ink"
-                      >
-                        {tag}
-                      </span>
-                    ))}
-                  </div>
-                </div>
+              {/* Row: back button (left) ↔ visit/coming-soon button (right) */}
+              <div className="flex items-center justify-between gap-4">
+                <Link
+                  to="/"
+                  aria-label="Back to home"
+                  className="grid size-11 shrink-0 place-items-center rounded-full bg-surface transition-colors hover:bg-hairline"
+                >
+                  <img src="/assets/icons/arrow-back.svg" alt="" className="size-5" />
+                </Link>
 
-                {/* COMING SOON (muted, static) → LIVE SITE (primary, clickable) once a link exists */}
+                {/* COMING SOON (muted, static) → VISIT SITE (primary, clickable) once a link exists */}
                 {hasLink ? (
                   <motion.a
                     href={project.link}
@@ -177,7 +162,7 @@ export default function ProjectDetail() {
                     whileHover={{ scale: 1.04 }}
                     whileTap={{ scale: 0.97 }}
                     transition={{ type: 'spring', stiffness: 400, damping: 22 }}
-                    className="inline-flex h-[32px] w-fit items-center gap-1 rounded-full bg-inverse px-3 text-[14px] font-medium uppercase text-inverse-ink"
+                    className="inline-flex h-11 w-fit items-center gap-1 rounded-full bg-inverse px-5 text-[14px] font-medium uppercase text-inverse-ink"
                   >
                     <img
                       src="/assets/icons/link.svg"
@@ -188,13 +173,29 @@ export default function ProjectDetail() {
                     Visit site
                   </motion.a>
                 ) : (
-                  <span className="inline-flex h-[32px] w-fit items-center gap-1 rounded-full bg-surface px-3 text-[14px] font-medium uppercase text-ink-muted">
+                  <span className="inline-flex h-11 w-fit items-center gap-1 rounded-full bg-surface px-5 text-[14px] font-medium uppercase text-ink-muted">
                     <img src="/assets/icons/link.svg" alt="" className="size-4 opacity-50" />
                     Coming soon
                   </span>
                 )}
               </div>
 
+              {/* Title */}
+              <h1 className="font-display text-[28px] leading-none text-ink">{project.title}</h1>
+
+              {/* Pills */}
+              <div className="flex flex-wrap items-center gap-1">
+                {project.tags.map((tag) => (
+                  <span
+                    key={tag}
+                    className="flex h-[30px] items-center rounded-[6px] bg-surface px-3 text-[14px] uppercase text-ink"
+                  >
+                    {tag}
+                  </span>
+                ))}
+              </div>
+
+              {/* Supporting text */}
               <p className="max-w-[1140px] text-[15px] leading-[1.4] text-ink-muted">
                 {project.description}
               </p>

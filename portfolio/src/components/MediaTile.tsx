@@ -47,7 +47,7 @@ export default function MediaTile({
       onMouseEnter={onHoverStart}
       onMouseLeave={onHoverEnd}
     >
-      <div className="relative aspect-[3/2] w-full overflow-hidden rounded-[5px] bg-surface">
+      <div className="relative -mx-6 aspect-[3/2] w-auto overflow-hidden rounded-none bg-surface sm:mx-0 sm:w-full sm:rounded-[5px]">
         {image ? (
           isVideo ? (
             <video

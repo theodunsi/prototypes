@@ -37,9 +37,9 @@ export default function ProjectsArchive() {
         <Link
           to="/"
           aria-label="Back to home"
-          className="absolute top-[50px] left-6 grid h-[30px] w-[40px] place-items-center rounded-full bg-surface transition-colors hover:bg-hairline sm:left-10 lg:left-20 xl:left-[94px]"
+          className="absolute top-[50px] left-6 grid size-11 place-items-center rounded-full bg-surface transition-colors hover:bg-hairline sm:left-10 lg:left-20 xl:left-[94px]"
         >
-          <img src="/assets/icons/arrow-back.svg" alt="" className="size-4" />
+          <img src="/assets/icons/arrow-back.svg" alt="" className="size-5" />
         </Link>
 
         {/* Recent-Works-style grid — pt clearance on mobile so it clears the back button */}
@@ -48,7 +48,7 @@ export default function ProjectsArchive() {
           initial="hidden"
           whileInView="show"
           viewport={inView}
-          className="grid grid-cols-1 gap-x-3 gap-y-8 pt-12 sm:grid-cols-2 lg:pt-0"
+          className="grid grid-cols-1 gap-x-3 gap-y-8 pt-16 sm:grid-cols-2 lg:pt-0"
         >
           {archive.map((item, i) => (
             <MediaTile
