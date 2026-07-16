@@ -168,7 +168,7 @@ export default function ProjectDetail() {
                 <Link
                   to="/"
                   aria-label="Back to home"
-                  className="grid size-11 shrink-0 place-items-center rounded-full bg-surface transition-colors hover:bg-hairline sm:absolute sm:top-[50px] sm:left-10 sm:size-10 lg:left-20 xl:left-[94px]"
+                  className="grid size-11 shrink-0 place-items-center rounded-full bg-surface transition-colors hover:bg-hairline sm:absolute sm:top-[46px] sm:left-10 sm:size-10 lg:left-20 xl:left-[94px]"
                 >
                   <img src="/assets/icons/arrow-back.svg" alt="" className="size-5" />
                 </Link>
