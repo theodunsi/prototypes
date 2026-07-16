@@ -2,6 +2,8 @@ import { useRef } from 'react'
 import { Link } from 'react-router-dom'
 import { motion } from 'motion/react'
 import { fadeUp } from '../lib/motion'
+import { useMediaLoaded } from '../lib/media'
+import PulseLoader from './PulseLoader'
 
 // A project / showreel media tile (image or video) with an optional title
 // underneath. If `href` is set, the whole tile links to that page.
@@ -37,6 +39,7 @@ export default function MediaTile({
 }) {
   const isVideo = !!image && /\.(mp4|webm)$/i.test(image)
   const localRef = useRef<HTMLVideoElement>(null)
+  const { loaded, setLoaded, setEl } = useMediaLoaded()
   // Hover-play tiles keep a fixed frame (the parent coordinates which one plays);
   // other tiles get the subtle zoom-in.
   const zoom = hoverPlay ? '' : 'transition-transform duration-500 ease-out group-hover:scale-[1.04]'
@@ -54,6 +57,7 @@ export default function MediaTile({
               ref={(el) => {
                 localRef.current = el
                 registerVideo?.(el)
+                setEl(el)
               }}
               src={image}
               poster={poster}
@@ -61,6 +65,7 @@ export default function MediaTile({
               muted
               loop
               playsInline
+              onLoadedData={() => setLoaded(true)}
               onEnded={(e) => {
                 e.currentTarget.currentTime = 0
                 void e.currentTarget.play()
@@ -69,8 +74,10 @@ export default function MediaTile({
             />
           ) : (
             <img
+              ref={setEl}
               src={image}
               alt={title ?? ''}
+              onLoad={() => setLoaded(true)}
               className={`size-full object-center ${zoom} ${
                 fit === 'contain' ? 'object-contain' : 'object-cover'
               }`}
@@ -80,6 +87,9 @@ export default function MediaTile({
           // Empty placeholder — subtle sheen on hover until media is added
           <div className="size-full transition-colors duration-300 group-hover:bg-hairline" />
         )}
+        {/* Poster-backed tiles (archive) already show a frame instantly, so the
+            pulse is only for tiles without one (Recent Works images). */}
+        {image && !poster && <PulseLoader show={!loaded} />}
       </div>
       {title && (
         <p className="mt-6 text-[14px] uppercase text-ink">

@@ -3,6 +3,8 @@ import { Link, useParams } from 'react-router-dom'
 import { motion, type Variants } from 'motion/react'
 import { useLenis } from 'lenis/react'
 import Header from '../components/Header'
+import PulseLoader from '../components/PulseLoader'
+import { useMediaLoaded } from '../lib/media'
 import { INSET } from '../lib/layout'
 import { projects, recentWorks } from '../data/content'
 
@@ -16,6 +18,7 @@ const inView = { once: true, margin: '-80px' } as const
 // first, falls back to an autoplaying MP4, then to an empty placeholder.
 function MediaBox({ base }: { base: string }) {
   const [kind, setKind] = useState<'img' | 'video' | 'none'>('img')
+  const { loaded, setLoaded, setEl } = useMediaLoaded()
   return (
     <motion.div
       variants={fadeUp}
@@ -26,19 +29,23 @@ function MediaBox({ base }: { base: string }) {
     >
       {kind === 'img' && (
         <img
+          ref={setEl}
           src={`${base}.png`}
           alt=""
+          onLoad={() => setLoaded(true)}
           onError={() => setKind('video')}
           className="size-full object-cover object-center"
         />
       )}
       {kind === 'video' && (
         <video
+          ref={setEl}
           src={`${base}.mp4`}
           autoPlay
           muted
           loop
           playsInline
+          onLoadedData={() => setLoaded(true)}
           onError={() => setKind('none')}
           onEnded={(e) => {
             // Safety net: if a browser ever fires "ended" despite loop, restart it.
@@ -48,6 +55,7 @@ function MediaBox({ base }: { base: string }) {
           className="size-full object-cover object-center"
         />
       )}
+      {kind !== 'none' && <PulseLoader show={!loaded} />}
     </motion.div>
   )
 }

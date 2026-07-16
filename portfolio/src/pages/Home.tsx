@@ -6,6 +6,8 @@ import { AnimatePresence, motion, useReducedMotion } from 'motion/react'
 import { profile, tags, recentWorks, explorations, socials } from '../data/content'
 import Header from '../components/Header'
 import MediaTile from '../components/MediaTile'
+import PulseLoader from '../components/PulseLoader'
+import { useMediaLoaded } from '../lib/media'
 import { INSET } from '../lib/layout'
 import { fadeUp, stagger, inView } from '../lib/motion'
 
@@ -130,6 +132,7 @@ function ExplorationTile({
   open: boolean
   onOpen: () => void
 }) {
+  const { loaded, setLoaded, setEl } = useMediaLoaded()
   return (
     <motion.div
       variants={fadeUp}
@@ -139,6 +142,7 @@ function ExplorationTile({
       {!open && (
         <motion.video
           layoutId={`explore-${index}`}
+          ref={setEl}
           src={src}
           data-click-sound
           autoPlay
@@ -146,6 +150,7 @@ function ExplorationTile({
           loop
           playsInline
           onClick={onOpen}
+          onLoadedData={() => setLoaded(true)}
           onEnded={(e) => {
             e.currentTarget.currentTime = 0
             void e.currentTarget.play()
@@ -155,6 +160,7 @@ function ExplorationTile({
           className="absolute inset-0 size-full object-cover"
         />
       )}
+      <PulseLoader show={!open && !loaded} />
     </motion.div>
   )
 }
