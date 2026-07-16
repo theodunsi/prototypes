@@ -223,26 +223,27 @@ export default function ProjectDetail() {
       </section>
 
       {/* Nav footer — desktop: 3 across (Previous · Back to top · Next).
-          Mobile: Previous + Next share the top row (equal width), Back to top full-width below. */}
-      <footer className={`flex flex-wrap items-center gap-3 pt-[100px] pb-[100px] sm:flex-nowrap sm:justify-between sm:gap-0 ${INSET}`}>
+          Mobile: Back to top full-width on top, Previous + Next share the row below
+          (generous vertical gap between the two rows). */}
+      <footer className={`flex flex-wrap items-center gap-x-3 gap-y-8 pt-[100px] pb-[100px] sm:flex-nowrap sm:justify-between sm:gap-0 ${INSET}`}>
         <NavButton
           label="Previous"
           icon="/assets/icons/arrow-back.svg"
           to={prev ? `/project/${prev.slug}` : undefined}
-          className="order-1 flex-1 sm:order-none sm:flex-none"
+          className="order-2 flex-1 sm:order-none sm:flex-none"
         />
         <NavButton
           label="Back to top"
           icon="/assets/icons/arrow-up.svg"
           onClick={() => (lenis ? lenis.scrollTo(0) : window.scrollTo({ top: 0, behavior: 'smooth' }))}
-          className="order-3 w-full sm:order-none sm:w-auto"
+          className="order-1 w-full sm:order-none sm:w-auto"
         />
         <NavButton
           label="Next"
           icon="/assets/icons/arrow-left.svg"
           iconRight
           to={next ? `/project/${next.slug}` : undefined}
-          className="order-2 flex-1 sm:order-none sm:flex-none"
+          className="order-3 flex-1 sm:order-none sm:flex-none"
         />
       </footer>
     </main>
