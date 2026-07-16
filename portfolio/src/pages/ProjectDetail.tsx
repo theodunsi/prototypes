@@ -4,7 +4,7 @@ import { motion, type Variants } from 'motion/react'
 import { useLenis } from 'lenis/react'
 import Header from '../components/Header'
 import { INSET } from '../lib/layout'
-import { projects } from '../data/content'
+import { projects, recentWorks } from '../data/content'
 
 const fadeUp: Variants = {
   hidden: { opacity: 0, y: 24 },
@@ -116,8 +116,13 @@ export default function ProjectDetail() {
     )
   }
 
-  const prev = index > 0 ? projects[index - 1] : null
-  const next = index < projects.length - 1 ? projects[index + 1] : null
+  // Previous/Next follow the homepage Recent Works order (the sequence the
+  // visitor browses), not the internal projects[] order — so reordering the
+  // cards reorders navigation too, and the two can never disagree.
+  const order = recentWorks.map((w) => w.slug).filter((s): s is string => !!s)
+  const orderIndex = order.indexOf(slug ?? '')
+  const prevSlug = orderIndex > 0 ? order[orderIndex - 1] : null
+  const nextSlug = orderIndex >= 0 && orderIndex < order.length - 1 ? order[orderIndex + 1] : null
   const hasLink = !!project.link
 
   // Build the media boxes in reading order and assign numbered file paths:
@@ -229,7 +234,7 @@ export default function ProjectDetail() {
         <NavButton
           label="Previous"
           icon="/assets/icons/arrow-back.svg"
-          to={prev ? `/project/${prev.slug}` : undefined}
+          to={prevSlug ? `/project/${prevSlug}` : undefined}
           className="order-2 flex-1 sm:order-none sm:flex-none"
         />
         <NavButton
@@ -242,7 +247,7 @@ export default function ProjectDetail() {
           label="Next"
           icon="/assets/icons/arrow-left.svg"
           iconRight
-          to={next ? `/project/${next.slug}` : undefined}
+          to={nextSlug ? `/project/${nextSlug}` : undefined}
           className="order-3 flex-1 sm:order-none sm:flex-none"
         />
       </footer>
