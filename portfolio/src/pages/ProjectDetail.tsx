@@ -69,7 +69,7 @@ function NavButton({
   className?: string
 }) {
   const disabled = !to && !onClick
-  const cls = `inline-flex h-11 items-center justify-center gap-1 rounded-full bg-surface px-5 text-[14px] font-medium uppercase text-ink transition-colors hover:bg-hairline sm:h-[32px] sm:px-3 ${
+  const cls = `inline-flex h-11 cursor-pointer items-center justify-center gap-1 rounded-full bg-surface px-5 text-[14px] font-medium uppercase text-ink transition-colors hover:bg-hairline sm:h-[32px] sm:px-3 ${
     disabled ? 'pointer-events-none opacity-50' : ''
   } ${className}`
   const img = <img src={icon} alt="" className="size-4" />
