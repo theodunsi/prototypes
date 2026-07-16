@@ -140,6 +140,17 @@ export default function ProjectDetail() {
       : { type: 'pair' as const, bases: [nextBase(), nextBase()] }
   )
 
+  // Tag pills — shown in the desktop title row and (separately) in the mobile
+  // stack, so define once and render in both places.
+  const tagPills = project.tags.map((tag) => (
+    <span
+      key={tag}
+      className="flex h-[30px] items-center rounded-[6px] bg-surface px-3 text-[14px] uppercase text-ink"
+    >
+      {tag}
+    </span>
+  ))
+
   return (
     <main className="mx-auto min-h-screen w-full max-w-[1440px] bg-background">
       <Header />
@@ -147,18 +158,26 @@ export default function ProjectDetail() {
       {/* Content */}
       <section className={`relative pt-[50px] ${INSET}`}>
         <div className="flex flex-col gap-3">
-          {/* Intro: back+action row, title, pills, supporting text — then hero media */}
           <div className="flex flex-col gap-[50px]">
             <div className="flex flex-col gap-6">
-              {/* Row: back button (left) ↔ visit/coming-soon button (right) */}
+              {/* Top row.
+                  Mobile: [back button ↔ visit/coming-soon].
+                  Desktop: back button is absolute-outdented to the left, and the
+                  title + tags sit on the left of the row with the button on the right. */}
               <div className="flex items-center justify-between gap-4">
                 <Link
                   to="/"
                   aria-label="Back to home"
-                  className="grid size-11 shrink-0 place-items-center rounded-full bg-surface transition-colors hover:bg-hairline"
+                  className="grid size-11 shrink-0 place-items-center rounded-full bg-surface transition-colors hover:bg-hairline sm:absolute sm:top-[50px] sm:left-10 sm:size-10 lg:left-20 xl:left-[94px]"
                 >
                   <img src="/assets/icons/arrow-back.svg" alt="" className="size-5" />
                 </Link>
+
+                {/* Desktop-only inline title + tags */}
+                <div className="hidden items-center gap-4 sm:flex">
+                  <h1 className="font-display text-[28px] leading-none text-ink">{project.title}</h1>
+                  <div className="flex flex-wrap items-center gap-1">{tagPills}</div>
+                </div>
 
                 {/* COMING SOON (muted, static) → VISIT SITE (primary, clickable) once a link exists */}
                 {hasLink ? (
@@ -187,20 +206,9 @@ export default function ProjectDetail() {
                 )}
               </div>
 
-              {/* Title */}
-              <h1 className="font-display text-[28px] leading-none text-ink">{project.title}</h1>
-
-              {/* Pills */}
-              <div className="flex flex-wrap items-center gap-1">
-                {project.tags.map((tag) => (
-                  <span
-                    key={tag}
-                    className="flex h-[30px] items-center rounded-[6px] bg-surface px-3 text-[14px] uppercase text-ink"
-                  >
-                    {tag}
-                  </span>
-                ))}
-              </div>
+              {/* Mobile-only stacked title + tags (desktop shows them in the row above) */}
+              <h1 className="font-display text-[28px] leading-none text-ink sm:hidden">{project.title}</h1>
+              <div className="flex flex-wrap items-center gap-1 sm:hidden">{tagPills}</div>
 
               {/* Supporting text */}
               <p className="max-w-[1140px] text-[15px] leading-[1.4] text-ink-muted">

@@ -271,7 +271,7 @@ export default function Home() {
                   key={c}
                   src={`/assets/icons/flower-${c}.svg`}
                   alt=""
-                  className="size-7 cursor-pointer"
+                  className="size-7 cursor-pointer sm:size-6"
                   // Static until hovered; then spins continuously, and eases back to rest on mouse-out
                   whileHover={reduce ? undefined : { rotate: 360, transition: { duration: 1.1, repeat: Infinity, ease: 'linear' } }}
                   transition={{ duration: 0.4, ease: 'easeOut' }}
@@ -374,7 +374,7 @@ export default function Home() {
                 key={tag}
                 variants={fadeUp}
                 whileHover={{ y: -2 }}
-                className="flex h-9 items-center rounded-[7px] bg-surface px-4 text-[15px] capitalize text-ink transition-colors hover:bg-hairline"
+                className="flex h-9 items-center rounded-[7px] bg-surface px-4 text-[15px] capitalize text-ink transition-colors hover:bg-hairline sm:h-[30px] sm:rounded-[6px] sm:px-3 sm:text-[14px]"
               >
                 {tag}
               </motion.span>

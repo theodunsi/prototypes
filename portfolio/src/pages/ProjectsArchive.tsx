@@ -37,7 +37,7 @@ export default function ProjectsArchive() {
         <Link
           to="/"
           aria-label="Back to home"
-          className="absolute top-[50px] left-6 grid size-11 place-items-center rounded-full bg-surface transition-colors hover:bg-hairline sm:left-10 lg:left-20 xl:left-[94px]"
+          className="absolute top-[50px] left-6 grid size-11 place-items-center rounded-full bg-surface transition-colors hover:bg-hairline sm:left-10 sm:size-10 lg:left-20 xl:left-[94px]"
         >
           <img src="/assets/icons/arrow-back.svg" alt="" className="size-5" />
         </Link>

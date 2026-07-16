@@ -27,7 +27,7 @@ export default function Header() {
       </div>
       <button
         onClick={toggle}
-        className="grid size-11 place-items-center rounded-full bg-surface transition-colors hover:bg-hairline"
+        className="grid size-11 place-items-center rounded-full bg-surface transition-colors hover:bg-hairline sm:size-10"
         aria-label={enabled ? 'Mute' : 'Unmute'}
         aria-pressed={enabled}
       >
