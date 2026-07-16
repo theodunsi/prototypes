@@ -22,7 +22,7 @@ function MediaBox({ base }: { base: string }) {
       initial="hidden"
       whileInView="show"
       viewport={inView}
-      className="relative h-[720px] w-full overflow-hidden rounded-[5px] bg-surface"
+      className="relative aspect-[19/12] w-full overflow-hidden rounded-[5px] bg-surface sm:aspect-auto sm:h-[720px]"
     >
       {kind === 'img' && (
         <img
@@ -59,17 +59,19 @@ function NavButton({
   iconRight = false,
   to,
   onClick,
+  className = '',
 }: {
   label: string
   icon: string
   iconRight?: boolean
   to?: string
   onClick?: () => void
+  className?: string
 }) {
   const disabled = !to && !onClick
-  const cls = `inline-flex h-11 items-center gap-1 rounded-full bg-surface px-5 text-[14px] font-medium uppercase text-ink transition-colors hover:bg-hairline ${
+  const cls = `inline-flex h-11 items-center justify-center gap-1 rounded-full bg-surface px-5 text-[14px] font-medium uppercase text-ink transition-colors hover:bg-hairline ${
     disabled ? 'pointer-events-none opacity-50' : ''
-  }`
+  } ${className}`
   const img = <img src={icon} alt="" className="size-4" />
   const inner = (
     <>
@@ -220,23 +222,27 @@ export default function ProjectDetail() {
         </div>
       </section>
 
-      {/* Nav footer */}
-      <footer className={`flex items-center justify-between pt-[100px] pb-[100px] ${INSET}`}>
+      {/* Nav footer — desktop: 3 across (Previous · Back to top · Next).
+          Mobile: Previous + Next share the top row (equal width), Back to top full-width below. */}
+      <footer className={`flex flex-wrap items-center gap-3 pt-[100px] pb-[100px] sm:flex-nowrap sm:justify-between sm:gap-0 ${INSET}`}>
         <NavButton
           label="Previous"
           icon="/assets/icons/arrow-back.svg"
           to={prev ? `/project/${prev.slug}` : undefined}
+          className="order-1 flex-1 sm:order-none sm:flex-none"
         />
         <NavButton
           label="Back to top"
           icon="/assets/icons/arrow-up.svg"
           onClick={() => (lenis ? lenis.scrollTo(0) : window.scrollTo({ top: 0, behavior: 'smooth' }))}
+          className="order-3 w-full sm:order-none sm:w-auto"
         />
         <NavButton
           label="Next"
           icon="/assets/icons/arrow-left.svg"
           iconRight
           to={next ? `/project/${next.slug}` : undefined}
+          className="order-2 flex-1 sm:order-none sm:flex-none"
         />
       </footer>
     </main>
