@@ -45,7 +45,7 @@ function PillButton({ label, href }: { label: string; href: string }) {
       whileHover={{ scale: 1.04 }}
       whileTap={{ scale: 0.97 }}
       transition={{ type: 'spring', stiffness: 400, damping: 22 }}
-      className="inline-flex h-11 items-center gap-1 rounded-full bg-inverse px-5 text-[14px] font-medium text-inverse-ink"
+      className="inline-flex h-11 items-center gap-1 rounded-full bg-inverse px-5 text-[14px] font-medium text-inverse-ink sm:h-[32px] sm:px-3"
     >
       <img src="/assets/icons/mail.svg" alt="" className="size-4" style={{ filter: 'var(--icon-invert)' }} />
       {label}
@@ -83,7 +83,7 @@ function CopyEmailButton() {
       layout
       transition={{ layout: { duration: 0.4, ease: [0.22, 1, 0.36, 1] } }}
       aria-label={`Copy email address ${profile.email}`}
-      className="inline-flex h-11 w-fit cursor-pointer items-center gap-1 overflow-hidden rounded-full bg-surface px-5 text-[14px] font-medium uppercase text-ink transition-colors hover:bg-hairline"
+      className="inline-flex h-11 w-fit cursor-pointer items-center gap-1 overflow-hidden rounded-full bg-surface px-5 text-[14px] font-medium uppercase text-ink transition-colors hover:bg-hairline sm:h-[32px] sm:px-3"
     >
       {/* Icon crossfades copy → check. Both are absolutely stacked in a fixed
           16px box so the swap can't nudge the button's width mid-animation. */}
@@ -339,7 +339,7 @@ export default function Home() {
             whileHover={{ scale: 1.04 }}
             whileTap={{ scale: 0.97 }}
             transition={{ type: 'spring', stiffness: 400, damping: 22 }}
-            className="inline-flex h-11 items-center gap-1 rounded-full bg-inverse px-5 text-[14px] font-medium text-inverse-ink"
+            className="inline-flex h-11 items-center gap-1 rounded-full bg-inverse px-5 text-[14px] font-medium text-inverse-ink sm:h-[32px] sm:px-3"
           >
             SEE PROJECTS ARCHIVE
             <img
@@ -358,7 +358,7 @@ export default function Home() {
             spreads label to top, pills to bottom). On mobile it becomes `contents`
             so its children flow into the section flex and can be ordered around the
             bio — giving the mobile stack: label → bio → pills. */}
-        <div className="contents lg:flex lg:flex-col lg:justify-between lg:gap-12 lg:max-w-[349px]">
+        <div className="contents lg:flex lg:flex-col lg:justify-between lg:max-w-[349px]">
           <Reveal className="order-1 lg:order-none">
             <SectionLabel>[Who am I]</SectionLabel>
           </Reveal>

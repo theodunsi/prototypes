@@ -69,7 +69,7 @@ function NavButton({
   className?: string
 }) {
   const disabled = !to && !onClick
-  const cls = `inline-flex h-11 items-center justify-center gap-1 rounded-full bg-surface px-5 text-[14px] font-medium uppercase text-ink transition-colors hover:bg-hairline ${
+  const cls = `inline-flex h-11 items-center justify-center gap-1 rounded-full bg-surface px-5 text-[14px] font-medium uppercase text-ink transition-colors hover:bg-hairline sm:h-[32px] sm:px-3 ${
     disabled ? 'pointer-events-none opacity-50' : ''
   } ${className}`
   const img = <img src={icon} alt="" className="size-4" />
@@ -107,7 +107,7 @@ export default function ProjectDetail() {
           <p className="font-display text-[36px] leading-[1.1] text-ink">Project not found</p>
           <Link
             to="/"
-            className="inline-flex h-11 items-center rounded-full bg-surface px-5 text-[14px] font-medium uppercase text-ink transition-colors hover:bg-hairline"
+            className="inline-flex h-11 items-center rounded-full bg-surface px-5 text-[14px] font-medium uppercase text-ink transition-colors hover:bg-hairline sm:h-[32px] sm:px-3"
           >
             Back to home
           </Link>
@@ -169,7 +169,7 @@ export default function ProjectDetail() {
                     whileHover={{ scale: 1.04 }}
                     whileTap={{ scale: 0.97 }}
                     transition={{ type: 'spring', stiffness: 400, damping: 22 }}
-                    className="inline-flex h-11 w-fit items-center gap-1 rounded-full bg-inverse px-5 text-[14px] font-medium uppercase text-inverse-ink"
+                    className="inline-flex h-11 w-fit items-center gap-1 rounded-full bg-inverse px-5 text-[14px] font-medium uppercase text-inverse-ink sm:h-[32px] sm:px-3"
                   >
                     <img
                       src="/assets/icons/link.svg"
@@ -180,7 +180,7 @@ export default function ProjectDetail() {
                     Visit site
                   </motion.a>
                 ) : (
-                  <span className="inline-flex h-11 w-fit items-center gap-1 rounded-full bg-surface px-5 text-[14px] font-medium uppercase text-ink-muted">
+                  <span className="inline-flex h-11 w-fit items-center gap-1 rounded-full bg-surface px-5 text-[14px] font-medium uppercase text-ink-muted sm:h-[32px] sm:px-3">
                     <img src="/assets/icons/link.svg" alt="" className="size-4 opacity-50" />
                     Coming soon
                   </span>
