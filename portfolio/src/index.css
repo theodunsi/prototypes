@@ -1,0 +1,127 @@
+@import "tailwindcss";
+@config "../tailwind.config.js";
+
+/* ---- Lenis smooth scroll (required styles) ---- */
+html.lenis,
+html.lenis body {
+  height: auto;
+}
+.lenis.lenis-smooth {
+  scroll-behavior: auto !important;
+}
+.lenis.lenis-smooth [data-lenis-prevent] {
+  overscroll-behavior: contain;
+}
+.lenis.lenis-stopped {
+  overflow: hidden;
+}
+.lenis.lenis-smooth iframe {
+  pointer-events: none;
+}
+
+/* ---- Hide the vertical scrollbar (scrolling still works) ---- */
+html {
+  scrollbar-width: none; /* Firefox */
+  -ms-overflow-style: none; /* IE/Edge */
+}
+html::-webkit-scrollbar {
+  display: none; /* Chrome / Safari */
+}
+
+/* ---- Soft blur-to-focus entrance on page load ---- */
+/* Only runs on a real page load/refresh (#root mounts once), not on route changes. */
+@media (prefers-reduced-motion: no-preference) {
+  #root {
+    /* `backwards` (not `both`) so the blur only exists DURING the entrance and is
+       cleared afterward — a lingering filter breaks position:fixed inside #root. */
+    animation: app-enter 0.7s cubic-bezier(0.22, 1, 0.36, 1) backwards;
+  }
+}
+@keyframes app-enter {
+  from {
+    opacity: 0;
+    filter: blur(8px);
+  }
+  to {
+    opacity: 1;
+    filter: blur(0);
+  }
+}
+
+/* ---- Fonts (exported from Figma) ---- */
+/* PP Editorial New — display/serif */
+@font-face {
+  font-family: "PP Editorial New";
+  src: url("/fonts/EditorialNew/PPEditorialNew-Ultralight.woff2") format("woff2");
+  font-weight: 200;
+  font-style: normal;
+  font-display: swap;
+}
+
+/* PP Neue Montreal — body sans */
+@font-face {
+  font-family: "PP Neue Montreal";
+  src: url("/fonts/PPNeueMontreal/PPNeueMontreal-Book.woff2") format("woff2");
+  font-weight: 400;
+  font-style: normal;
+  font-display: swap;
+}
+@font-face {
+  font-family: "PP Neue Montreal";
+  src: url("/fonts/PPNeueMontreal/PPNeueMontreal-Italic.woff2") format("woff2");
+  font-weight: 400;
+  font-style: italic;
+  font-display: swap;
+}
+@font-face {
+  font-family: "PP Neue Montreal";
+  src: url("/fonts/PPNeueMontreal/PPNeueMontreal-Medium.woff2") format("woff2");
+  font-weight: 500;
+  font-style: normal;
+  font-display: swap;
+}
+
+/* ---- Theme tokens ---- */
+/* Dark is the default (matches the Figma). Light flips via [data-theme="light"]. */
+:root {
+  --bg: #050505;          /* bg-main */
+  --surface: #141414;     /* bg-subtle: cards, pills, tags */
+  --ink: #FFFFFF;         /* primary text */
+  --ink-muted: rgba(255, 255, 255, 0.5);
+  --inverse: #FFFFFF;     /* solid button bg */
+  --inverse-ink: #050505; /* text on solid button */
+  --hairline: rgba(255, 255, 255, 0.09); /* hover wash */
+  --icon-invert: none;    /* mono icons render as-authored in dark */
+}
+
+:root[data-theme="light"] {
+  --bg: #FAFAFA;
+  --surface: #EFEFEF;
+  --ink: #050505;
+  --ink-muted: rgba(5, 5, 5, 0.5);
+  --inverse: #050505;
+  --inverse-ink: #FFFFFF;
+  --hairline: rgba(5, 5, 5, 0.06);
+  --icon-invert: invert(1); /* flip the black/white mono icons for light bg */
+}
+
+body {
+  font-family: "PP Neue Montreal", system-ui, sans-serif;
+  background-color: var(--bg);
+  color: var(--ink);
+  -webkit-font-smoothing: antialiased;
+}
+
+/* Smooth the colour swap once the app has mounted (avoids animating the initial paint) */
+@media (prefers-reduced-motion: no-preference) {
+  html.theme-ready * {
+    transition: background-color 0.35s ease, border-color 0.35s ease,
+      color 0.35s ease, filter 0.35s ease;
+  }
+}
+
+/* Gentle pulse for the "available for work" status dot */
+@keyframes status-pulse {
+  from { box-shadow: 0 0 0 0 rgba(52, 199, 89, 0.5); }
+  to   { box-shadow: 0 0 0 9px rgba(52, 199, 89, 0); }
+}

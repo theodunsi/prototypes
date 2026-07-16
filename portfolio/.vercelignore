@@ -1,0 +1,13 @@
+# Vercel installs deps and builds in the cloud, so we only upload source.
+node_modules
+dist
+
+# Local-only video backups (originals kept on disk, must not deploy)
+.local-backups
+.video-originals
+**/.video-originals
+
+# Misc
+.git
+.vercel
+*.log
