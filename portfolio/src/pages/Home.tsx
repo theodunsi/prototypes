@@ -525,7 +525,9 @@ export default function Home() {
                 }}
                 style={{ borderRadius: 8 }}
                 transition={{ duration: 0.5, ease: [0.22, 1, 0.36, 1] }}
-                className="pointer-events-auto aspect-[16/10] w-full max-w-[1340px] object-cover"
+                // Mobile: match the tile's 3:2 so the morph is a clean translate (no
+                // aspect squish / crop reframe). Desktop keeps the wide 16:10 modal.
+                className="pointer-events-auto aspect-[3/2] w-full max-w-[1340px] object-cover sm:aspect-[16/10]"
               />
             </div>
           )}
