@@ -14,6 +14,7 @@ export function useSound() {
 // the background music and enables a subtle click sound on links/buttons.
 export default function SoundProvider({ children }: { children: React.ReactNode }) {
   const [enabled, setEnabled] = useState(false)
+  const enabledRef = useRef(false)
   const bgmRef = useRef<HTMLAudioElement | null>(null)
   const clickRef = useRef<HTMLAudioElement | null>(null)
 
@@ -44,13 +45,20 @@ export default function SoundProvider({ children }: { children: React.ReactNode 
     }
   }, [])
 
-  // Play/pause the looping background music when toggled
-  useEffect(() => {
+  // Toggle drives the audio SYNCHRONOUSLY inside the click gesture. Mobile
+  // browsers (iOS Safari especially) block play() that runs later in a useEffect
+  // because it's no longer tied to the user's tap — which is why sound worked on
+  // desktop but not on phones. The ref avoids a stale-state read.
+  const toggle = () => {
+    const next = !enabledRef.current
+    enabledRef.current = next
     const bgm = bgmRef.current
-    if (!bgm) return
-    if (enabled) bgm.play().catch(() => {})
-    else bgm.pause()
-  }, [enabled])
+    if (bgm) {
+      if (next) bgm.play().catch(() => {})
+      else bgm.pause()
+    }
+    setEnabled(next)
+  }
 
   // Subtle click sound on interactive elements, only while sound is on
   useEffect(() => {
@@ -70,7 +78,7 @@ export default function SoundProvider({ children }: { children: React.ReactNode 
   }, [enabled])
 
   return (
-    <SoundContext.Provider value={{ enabled, toggle: () => setEnabled((v) => !v) }}>
+    <SoundContext.Provider value={{ enabled, toggle }}>
       {children}
     </SoundContext.Provider>
   )

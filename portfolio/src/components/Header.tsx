@@ -31,11 +31,13 @@ export default function Header() {
         aria-label={enabled ? 'Mute' : 'Unmute'}
         aria-pressed={enabled}
       >
-        {/* Instant swap — no transition. Muted by default → mute icon shows. */}
+        {/* Instant swap — no transition. Muted by default → mute icon shows.
+            Sound ON → icon goes fully white; OFF stays the muted grey. */}
         <img
           src={enabled ? '/assets/icons/volume-high.svg' : '/assets/icons/volume-mute.svg'}
           alt=""
           className="size-5"
+          style={enabled ? { filter: 'brightness(0) invert(1)' } : undefined}
         />
       </button>
     </motion.header>
