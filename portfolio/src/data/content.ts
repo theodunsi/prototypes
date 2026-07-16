@@ -31,6 +31,7 @@ export const tags = [
   'Interaction design',
   'Component libraries',
   'Responsive development',
+  'Vibecoding',
 ]
 
 // RECENT WORKS — drop an `image` path (in /public) when you have one.
