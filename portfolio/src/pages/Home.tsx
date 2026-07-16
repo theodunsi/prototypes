@@ -134,7 +134,7 @@ function ExplorationTile({
     <motion.div
       variants={fadeUp}
       whileHover={{ scale: 1.02 }}
-      className="relative -mx-6 aspect-[3/2] w-auto cursor-pointer overflow-hidden rounded-none bg-surface sm:mx-0 sm:w-full sm:rounded-[5px]"
+      className="relative aspect-[3/2] w-full cursor-pointer overflow-hidden rounded-[5px] bg-surface"
     >
       {!open && (
         <motion.video
@@ -287,7 +287,7 @@ export default function Home() {
           initial={{ opacity: 0, y: 32 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.7, ease: [0.22, 1, 0.36, 1], delay: 0.25 }}
-          className="-mx-6 aspect-[4/3] w-auto overflow-hidden rounded-none bg-surface sm:mx-0 sm:w-full sm:rounded-[5px]"
+          className="aspect-[4/3] w-full overflow-hidden rounded-[5px] bg-surface"
         >
           <video
             src="/assets/images/explorations/showreel-26.mp4"

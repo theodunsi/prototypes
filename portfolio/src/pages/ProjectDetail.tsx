@@ -22,7 +22,7 @@ function MediaBox({ base }: { base: string }) {
       initial="hidden"
       whileInView="show"
       viewport={inView}
-      className="relative -mx-6 aspect-[3/2] w-auto overflow-hidden rounded-none bg-surface sm:mx-0 sm:aspect-auto sm:h-[720px] sm:w-full sm:rounded-[5px]"
+      className="relative h-[720px] w-full overflow-hidden rounded-[5px] bg-surface"
     >
       {kind === 'img' && (
         <img
